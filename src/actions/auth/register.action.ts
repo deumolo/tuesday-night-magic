@@ -39,13 +39,6 @@ export const registerUser = defineAction({
         data: newUser,
       };
     } catch (error) {
-      if (error instanceof ActionInputError) {
-        return {
-          success: false,
-          error: error.issues.map((issue) => issue.message).join("\n"),
-        };
-      }
-
       if (
         error instanceof LibsqlError &&
         (error as Error).message.includes(
@@ -57,8 +50,6 @@ export const registerUser = defineAction({
           error: "Email already exists. Please use a different email address.",
         };
       }
-
-      return { success: false, error: JSON.stringify(error) };
     }
   },
 });
