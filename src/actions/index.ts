@@ -1,5 +1,5 @@
-import { registerUser } from './auth';
+import { registerUser, createGroup } from './auth';
 
 export const server = {
-  registerUser,
+  registerUser, createGroup
 };

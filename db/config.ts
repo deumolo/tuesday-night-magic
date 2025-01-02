@@ -14,7 +14,7 @@ const Group = defineTable({
   columns: {
     id: column.text({ primaryKey: true, unique: true }),
     name: column.text(),
-    public: column.boolean({ default: true }),
+    private: column.boolean({ default: false }),
     password: column.text({ optional: true }),
     createdAt: column.date({ default: new Date() }),
   },
