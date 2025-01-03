@@ -6,7 +6,7 @@ import { db, User } from "astro:db";
 import bcrypt from "bcryptjs";
 import { v4 as UUID } from "uuid";
 
-export const registerUser = defineAction({
+export const newUser = defineAction({
   accept: "form",
 
   input: z.object({
