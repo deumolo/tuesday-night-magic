@@ -122,7 +122,7 @@ import Layout from "../layouts/Layout.astro";
 
     const formData = new FormData(form);
 
-    const { data, error } = await actions.registerUser(formData);
+    const { data, error } = await actions.newUser(formData);
 
     if (data?.error) {
       errorAlertMessage.innerHTML = data.error;
