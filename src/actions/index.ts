@@ -1,5 +1,5 @@
-import { registerUser, createGroup } from './auth';
+import { newUser, createGroup, createDeck } from './auth';
 
 export const server = {
-  registerUser, createGroup
+  newUser, createGroup, createDeck 
 };
