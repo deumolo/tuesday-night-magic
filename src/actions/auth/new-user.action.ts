@@ -2,7 +2,7 @@ import { LibsqlError } from "@libsql/client";
 import { ActionInputError } from "astro:actions";
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
-import { db, User } from "astro:db";
+import { db, User, UserGroup } from "astro:db";
 import bcrypt from "bcryptjs";
 import { v4 as UUID } from "uuid";
 
@@ -29,16 +29,19 @@ export const newUser = defineAction({
         id: UUID(),
         name,
         email,
-        password: bcrypt.hashSync("1234"),
+        password: bcrypt.hashSync(password),
       };
 
-      await db.insert(User).values(newUser);
+      const queries = [db.insert(User).values(newUser)] as const;
+      await db.batch(queries);
 
       return {
         success: true,
         data: newUser,
       };
     } catch (error) {
+      console.log("error: ", error);
+
       if (
         error instanceof LibsqlError &&
         (error as Error).message.includes(
