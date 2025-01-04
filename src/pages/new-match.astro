@@ -1,0 +1,315 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import { actions } from "astro:actions";
+
+import { v4 as uuidv4 } from "uuid";
+
+const { data: decksData, error: decksError } = await Astro.callAction(
+  actions.getDecks,
+  {}
+);
+
+const { data, error } = await Astro.callAction(actions.getUsers, {});
+---
+
+<Layout>
+  <form class="space-y-5 w-3/4 mx-auto">
+    <div class="hidden">
+      <label class="">Group decks:</label>
+      <select
+        name=""
+        id="deck-by-group"
+        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
+      >
+        {
+          decksData?.decks?.map((deck) => (
+            <option
+              data-deck-id={deck.deckId}
+              data-deck-name={deck.deckName}
+              data-user-id={deck.userId}
+              data-user-name={deck.name}
+              value={deck.deckName}
+            >
+              {deck.deckName}
+            </option>
+          ))
+        }
+      </select>
+    </div>
+
+    <div class="hidden">
+      <label class="">Group:</label>
+      <input
+        type="text"
+        name="group"
+        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
+        placeholder="Group id"
+      />
+    </div>
+
+    <div class="flex justify-between">
+      <div class="space-x-4">
+        <label for="">Turns: </label>
+        <input
+          type="number"
+          name="turns"
+          class="text-base px-4 py-2 border rounded-lg focus:outline-none"
+          placeholder="Number of turns"
+        />
+      </div>
+
+      <div class="flex align-items-center space-x-4">
+        <button
+          type="button"
+          id="add-player"
+          class="disabled:bg-gray-200 disabled:cursor-not-allowed flex justify-center cursor-pointer transition ease-in duration-500"
+          >Add Player</button
+        >
+        <button
+          type="submit"
+          class="disabled:bg-gray-200 disabled:cursor-not-allowed flex justify-center cursor-pointer transition ease-in duration-500"
+          >Submit</button
+        >
+      </div>
+    </div>
+
+    <div class="space-x-4">
+      <label for="">Winner: </label>
+      <select
+        class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
+        name="playerList[0][playerId]"
+      >
+        <option value="">Select a player</option>
+        {
+          data?.users?.map((user) => (
+            <option
+              data-player-name={user.name}
+              data-player-id={user.id}
+              value={user.id}
+            >
+              {user.name}
+            </option>
+          ))
+        }
+      </select>
+    </div>
+
+    <div id="player-list" class="space-y-5">
+      <div class="player-item space-y-4">
+        <hr class="my-8" />
+        <div class="player-details space-x-4">
+          <label for="">Player: </label>
+          <select
+            class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
+            name="playerList[0][playerId]"
+          >
+            <option value="">Select a player</option>
+            {
+              data?.users?.map((user) => (
+                <option
+                  data-player-name={user.name}
+                  data-player-id={user.id}
+                  value={user.id}
+                >
+                  {user.name}
+                </option>
+              ))
+            }
+          </select>
+
+          <label for="">Deck: </label>
+
+          <select
+            name=""
+            class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
+          >
+            <option value="">Select a deck</option>
+          </select>
+
+          <button
+            type="button"
+            id=""
+            class="add-kill ml-4 disabled:bg-gray-200 disabled:cursor-not-allowed justify-center cursor-pointer transition ease-in duration-500"
+            >Add kill</button
+          >
+        </div>
+        <div class="player-stats space-y-4"></div>
+      </div>
+    </div>
+  </form>
+</Layout>
+
+<script>
+  import { v4 as uuidv4 } from "uuid";
+
+  const addPlayerButton = document.getElementById(
+    "add-player"
+  ) as HTMLButtonElement;
+
+  const addKillButton = document.querySelector(
+    ".add-kill"
+  ) as HTMLButtonElement;
+
+  // Part of the logic to get an array with all the decks in the group
+  const decksByGroup = document.getElementById(
+    "deck-by-group"
+  ) as HTMLSelectElement;
+  const decksByGroupOptions = decksByGroup.options;
+  const decksByGroupOptionsParsed = Array.from(decksByGroupOptions).map(
+    (option) => {
+      return {
+        deckId: option.dataset.deckId,
+        deckName: option.dataset.deckName,
+        userId: option.dataset.userId,
+        userName: option.dataset.userName,
+      };
+    }
+  );
+
+  // Part of the logic to get an array with all the users in the group
+  const usersByGroup = document.querySelector(
+    ".player-select"
+  ) as HTMLSelectElement;
+  const usersByGroupOptions = usersByGroup.options;
+  const usersByGroupOptionsParsed = Array.from(usersByGroupOptions).map(
+    (option) => {
+      if (option.dataset.playerId === undefined) {
+        return {
+          playerId: "",
+          playerName: "Select a player",
+        };
+      } else {
+        return {
+          playerId: option.dataset.playerId,
+          playerName: option.dataset.playerName,
+        };
+      }
+    }
+  );
+
+  const playerList = document.getElementById("player-list") as HTMLDivElement;
+
+  playerList.addEventListener("change", (event) => {
+    const changedEvent = event.target as HTMLSelectElement;
+    if (
+      changedEvent.tagName === "SELECT" &&
+      changedEvent.classList.contains("player-select")
+    ) {
+      const selectedValue = changedEvent.value;
+
+      //This is the shared space for the two select menus
+      const changedEventParent = changedEvent.parentElement as HTMLElement;
+
+      // console.log("Selected value:", selectedValue);
+      console.log("Parent:", changedEventParent);
+
+      const decksBySelectedUser = changedEventParent.querySelector(
+        ".player-decks"
+      ) as HTMLSelectElement;
+
+      const decksBySelectedUserData = decksByGroupOptionsParsed.filter(
+        (deck) => deck.userId === selectedValue
+      );
+
+      decksBySelectedUserData.unshift({
+        deckId: "",
+        deckName: "Select a deck",
+        userId: "",
+        userName: undefined,
+      });
+
+      decksBySelectedUser.innerHTML = `
+        ${decksBySelectedUserData.map(
+          (deck) =>
+            `<option data-deck-id="${deck.deckId}" data-deck-name="${deck.deckName}" data-user-id="${deck.userId}" value="${deck.userId}">
+              ${deck.deckName}
+            </option>`
+        )}
+      `;
+    }
+  });
+
+  playerList.addEventListener("click", (event) => {
+    const clickedEvent = event.target as HTMLButtonElement;
+    const clickedEventParent = clickedEvent.parentElement as HTMLDivElement;
+    const clickedEventStats =
+      clickedEventParent.nextElementSibling as HTMLDivElement;
+
+    if (clickedEvent.classList.contains("add-kill")) {
+      const newItem = document.createElement("div");
+      newItem.setAttribute("class", "flex space-x-4");
+      newItem.innerHTML = `
+      <div class="space-x-4">
+        <label> Opponent: </label>
+        <select class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        ${usersByGroupOptionsParsed.map(
+          (user) =>
+            `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
+              ${user.playerName}
+            </option>`
+        )}
+        </select>
+      </div>
+
+
+    <div class="space-x-4 flex items-center">
+      <label for="commander-damage">Commander damage:</label>
+      <input id="commander-damage" type="checkbox" 
+      class="ml-2 text-base border rounded-lg focus:outline-none" 
+      />
+    </div>
+
+      <div class="space-x-4">
+        <label> Tax: </label>
+        <input type="number" class="text-base px-4 py-2 border rounded-lg focus:outline-none" placeholder="Commander tax"/>
+      </div>
+    `;
+
+      clickedEventStats.appendChild(newItem);
+    }
+  });
+
+  addPlayerButton.addEventListener("click", () => {
+    const playerStatsDiv = document.getElementById(
+      "player-list"
+    ) as HTMLElement;
+
+    const newRow = document.createElement("div");
+    newRow.setAttribute("class", "player-item space-y-4");
+
+    const newRowBase = `
+    <hr class="my-8" />
+    <div class="player-details space-x-4">
+      <label> Player: </label>
+      <select class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        ${usersByGroupOptionsParsed.map(
+          (user) =>
+            `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
+              ${user.playerName}
+            </option>`
+        )}
+      </select>
+
+      <label for="">Deck: </label>
+      <select class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks">
+        <option value="">Select a deck</option>
+      </select>
+
+      <button
+        type="button"
+        id=""
+        class="add-kill ml-4 disabled:bg-gray-200 disabled:cursor-not-allowed justify-center cursor-pointer transition ease-in duration-500"
+      >
+        Add kill
+      </button>
+    </div>
+    <div class="player-stats space-y-4">
+    </div>
+    `;
+
+    newRow.innerHTML = newRowBase;
+
+    playerStatsDiv.appendChild(newRow);
+  });
+</script>
