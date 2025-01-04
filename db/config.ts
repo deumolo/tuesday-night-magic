@@ -35,6 +35,7 @@ const Match = defineTable({
   columns: {
     id: column.text({ primaryKey: true, unique: true }),
     group: column.text({ references: () => Group.columns.id }),
+    turns: column.number(),
     winner: column.text({ references: () => User.columns.id }),
     createdAt: column.date({ default: new Date() }),
   },
