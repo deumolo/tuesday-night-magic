@@ -23,7 +23,7 @@ export const createDeck = defineAction({
         name,
         private: privateDeck === "true",
         moxfieldLink,
-        userId: "2eb13575-9259-400f-a5a2-92bb75112f3b",
+        userId: userId,
       };
 
       console.log(newDeck);
