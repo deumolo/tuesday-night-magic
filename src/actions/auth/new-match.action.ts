@@ -16,52 +16,71 @@ export const newMatch = defineAction({
   accept: "form",
   handler: async (input, { request, cookies }) => {
     try {
-      
       const formData = await request.formData();
       console.log(formData);
 
-      const groupedData: { [key: string]: any } = {};
+      interface Player {
+        kills: Array<{ commanderDamage?: string; [key: string]: any }>;
+        [key: string]: any;
+      }
+
+      // Initialize groupedData with the desired structure
+      const groupedData: {
+        group: string | null;
+        turns: string | null;
+        winner: string | null;
+        players: Player[];
+      } = {
+        group: null, // Default value; can be updated later
+        turns: null, // Default value; can be updated later
+        winner: null, // Default value; can be updated later
+        players: [] as Player[], // Array to hold player objects
+      };
 
       for (let [name, value] of formData.entries()) {
         const match = name.match(/^playerList\[(\d+)](?:\[(.*?)])?$/);
         const matchkill = name.match(/playerList\[(\d+)\]\[(\d+)\]\[(.+)\]/);
-      
+
         if (matchkill) {
-          const playerIndex = matchkill[1];
+          const playerIndex = parseInt(matchkill[1], 10); // Convert index to a number
           const key = matchkill[3];
-      
-          if (!groupedData[playerIndex]) {
-            groupedData[playerIndex] = {};
+
+          // Ensure players array has an object at playerIndex
+          if (!groupedData.players[playerIndex]) {
+            groupedData.players[playerIndex] = { kills: [] };
           }
-      
-          if (!groupedData[playerIndex]["kills"]) {
-            groupedData[playerIndex]["kills"] = [];
-          }
-      
-          let newKillItem = groupedData[playerIndex]["kills"].pop() || {};
+
+          // Handle kill items
+          let newKillItem = groupedData.players[playerIndex].kills.pop() || {};
           newKillItem = { ...newKillItem, [key]: value };
-      
+
           if (key === "commanderDamage") {
-            groupedData[playerIndex]["kills"].push(newKillItem);
-            newKillItem = {};
+            groupedData.players[playerIndex].kills.push(newKillItem);
           } else {
-            groupedData[playerIndex]["kills"].push(newKillItem);
+            groupedData.players[playerIndex].kills.push(newKillItem);
           }
         } else if (match) {
-          const playerIndex = match[1];
+          const playerIndex = parseInt(match[1], 10); // Convert index to a number
           const key = match[2];
-      
-          if (!groupedData[playerIndex]) {
-            groupedData[playerIndex] = {};
+
+          // Ensure players array has an object at playerIndex
+          if (!groupedData.players[playerIndex]) {
+            groupedData.players[playerIndex] = { kills: [] };
           }
-      
-          groupedData[playerIndex][key] = value;
+
+          // Assign other properties to the player object
+          if (key) {
+            groupedData.players[playerIndex][key] = value;
+          }
         } else {
-          groupedData[name] = value;
+          // Handle global keys outside playerList
+          if (name === "group" || name === "turns" || name === "winner") {
+            groupedData[name] = value.toString();
+          }
         }
       }
 
-      console.log("Grouped data: ", groupedData)
+      console.log("Grouped data: ", groupedData);
 
       const turnsParsedNunber = Number(input.get("turns"));
 
@@ -71,18 +90,15 @@ export const newMatch = defineAction({
       });
 
       return { success: true, message: "Validation passed!" };
-
     } catch (err) {
-
       if (err instanceof z.ZodError) {
         console.log(err);
         return { success: false, error: err.errors };
       }
 
       console.log(err);
-      
-      return { success: false, error: ["Unknown error occurred"] };
 
+      return { success: false, error: ["Unknown error occurred"] };
     }
   },
 });
