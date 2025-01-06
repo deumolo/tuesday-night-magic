@@ -1,4 +1,5 @@
 import { db, Group, User, Deck, UserGroup } from "astro:db";
+import { v4 as UUID } from "uuid";
 
 export default async function () {
   await db.insert(Group).values([
@@ -37,21 +38,21 @@ export default async function () {
 
   await db.insert(Deck).values([
     {
-      id: "123123123123",
+      id: UUID(),
       name: "Spirit Squadron",
       private: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
       userId: "123123123123",
     },
     {
-      id: "123123123124",
+      id: UUID(),
       name: "Dogmeat",
       private: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
       userId: "123123123123",
     },
     {
-      id: "12312312312433311",
+      id: UUID(),
       name: "Jinnie Faye",
       private: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",

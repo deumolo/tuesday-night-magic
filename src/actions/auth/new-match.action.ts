@@ -40,34 +40,32 @@ export const newMatch = defineAction({
       for (let [name, value] of formData.entries()) {
         const match = name.match(/^playerList\[(\d+)](?:\[(.*?)])?$/);
         const matchkill = name.match(/playerList\[(\d+)\]\[(\d+)\]\[(.+)\]/);
-
+      
         if (matchkill) {
           const playerIndex = parseInt(matchkill[1], 10); // Convert index to a number
           const key = matchkill[3];
-
+      
           // Ensure players array has an object at playerIndex
           if (!groupedData.players[playerIndex]) {
             groupedData.players[playerIndex] = { kills: [] };
           }
-
-          // Handle kill items
-          let newKillItem = groupedData.players[playerIndex].kills.pop() || {};
-          newKillItem = { ...newKillItem, [key]: value };
-
-          if (key === "commanderDamage") {
-            groupedData.players[playerIndex].kills.push(newKillItem);
-          } else {
-            groupedData.players[playerIndex].kills.push(newKillItem);
+      
+          // Add a new kill item or update the last one based on the key
+          const killItemIndex = parseInt(matchkill[2], 10); // Get the kill index
+          if (!groupedData.players[playerIndex].kills[killItemIndex]) {
+            groupedData.players[playerIndex].kills[killItemIndex] = {};
           }
+      
+          groupedData.players[playerIndex].kills[killItemIndex][key] = value;
         } else if (match) {
           const playerIndex = parseInt(match[1], 10); // Convert index to a number
           const key = match[2];
-
+      
           // Ensure players array has an object at playerIndex
           if (!groupedData.players[playerIndex]) {
             groupedData.players[playerIndex] = { kills: [] };
           }
-
+      
           // Assign other properties to the player object
           if (key) {
             groupedData.players[playerIndex][key] = value;
@@ -80,7 +78,7 @@ export const newMatch = defineAction({
         }
       }
 
-      console.log("Grouped data: ", groupedData);
+      console.log(JSON.stringify(groupedData));
 
       const turnsParsedNunber = Number(input.get("turns"));
 

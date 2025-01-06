@@ -241,7 +241,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       decksBySelectedUser.innerHTML = `
         ${decksBySelectedUserData.map(
           (deck) =>
-            `<option data-deck-id="${deck.deckId}" data-deck-name="${deck.deckName}" data-user-id="${deck.userId}" value="${deck.userId}">
+            `<option data-deck-id="${deck.deckId}" data-deck-name="${deck.deckName}" data-user-id="${deck.userId}" value="${deck.deckId}">
               ${deck.deckName}
             </option>`
         )}
