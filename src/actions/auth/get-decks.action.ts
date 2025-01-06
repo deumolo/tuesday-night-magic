@@ -23,8 +23,6 @@ export const getDecks = defineAction({
         .innerJoin(Group, eq(Group.id, UserGroup.groupId))
         .where(eq(UserGroup.groupId, groupId));
 
-        console.log(decks);
-
       return {
         success: true,
         decks

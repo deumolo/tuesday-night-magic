@@ -1,4 +1,4 @@
-import { newUser, createGroup, createDeck, getUsers, getDecks } from "./auth";
+import { newUser, createGroup, createDeck, getUsers, getDecks, newMatch } from "./auth";
 
 export const server = {
   newUser,
@@ -6,4 +6,5 @@ export const server = {
   createDeck,
   getUsers,
   getDecks,
+  newMatch,
 };

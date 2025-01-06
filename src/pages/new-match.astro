@@ -78,9 +78,9 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       <label for="">Winner: </label>
       <select
         class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
-        name="playerList[0][playerId]"
+        name="winner"
       >
-        <option value="">Select a player</option>
+        <option value="">Select a winner</option>
         {
           data?.users?.map((user) => (
             <option
@@ -98,34 +98,47 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <div id="player-list" class="space-y-5">
       <div class="player-item space-y-4">
         <hr class="my-8" />
-        <div class="player-details space-x-4">
-          <label for="">Player: </label>
-          <select
-            class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
-            name="playerList[0][playerId]"
-          >
-            <option value="">Select a player</option>
-            {
-              data?.users?.map((user) => (
-                <option
-                  data-player-name={user.name}
-                  data-player-id={user.id}
-                  value={user.id}
-                >
-                  {user.name}
-                </option>
-              ))
-            }
-          </select>
+        <div class="player-details space-x-4 flex">
+          <div>
+            <label for="">Player: </label>
+            <select
+              class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
+              name="playerList[0][playerId]"
+            >
+              <option value="">Select a player</option>
+              {
+                data?.users?.map((user) => (
+                  <option
+                    data-player-name={user.name}
+                    data-player-id={user.id}
+                    value={user.id}
+                  >
+                    {user.name}
+                  </option>
+                ))
+              }
+            </select>
+          </div>
 
-          <label for="">Deck: </label>
+          <div>
+            <label for="">Deck: </label>
+            <select
+              name="playerList[0][deckId]"
+              class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
+            >
+              <option value="">Select a deck</option>
+            </select>
+          </div>
 
-          <select
-            name=""
-            class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
-          >
-            <option value="">Select a deck</option>
-          </select>
+          <div>
+            <label for="">Commander Tax: </label>
+            <input
+              name="playerList[0][commanderTax]"
+              name="tax"
+              class="text-base px-4 py-2 border rounded-lg focus:outline-none"
+              placeholder="Number of turns"
+            />
+          </div>
 
           <button
             type="button"
@@ -141,14 +154,20 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 </Layout>
 
 <script>
-  import { v4 as uuidv4 } from "uuid";
+  import { actions } from "astro:actions";
+
+  const form = document.querySelector("form") as HTMLFormElement;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const { data, error } = await actions.newMatch(formData);
+    console.log(data);
+  });
 
   const addPlayerButton = document.getElementById(
     "add-player"
-  ) as HTMLButtonElement;
-
-  const addKillButton = document.querySelector(
-    ".add-kill"
   ) as HTMLButtonElement;
 
   // Part of the logic to get an array with all the decks in the group
@@ -199,7 +218,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       const selectedValue = changedEvent.value;
 
       //This is the shared space for the two select menus
-      const changedEventParent = changedEvent.parentElement as HTMLElement;
+      const changedEventParent = changedEvent.parentElement?.parentElement as HTMLElement;
 
       // console.log("Selected value:", selectedValue);
       console.log("Parent:", changedEventParent);
@@ -230,6 +249,9 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   });
 
+  let playerIndex = 0;
+  let killIndex = 0;
+
   playerList.addEventListener("click", (event) => {
     const clickedEvent = event.target as HTMLButtonElement;
     const clickedEventParent = clickedEvent.parentElement as HTMLDivElement;
@@ -242,7 +264,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       newItem.innerHTML = `
       <div class="space-x-4">
         <label> Opponent: </label>
-        <select class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${playerIndex}][${killIndex}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
         ${usersByGroupOptionsParsed.map(
           (user) =>
             `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
@@ -255,18 +277,19 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     <div class="space-x-4 flex items-center">
       <label for="commander-damage">Commander damage:</label>
-      <input id="commander-damage" type="checkbox" 
-      class="ml-2 text-base border rounded-lg focus:outline-none" 
-      />
+        <select name="playerList[${playerIndex}][${killIndex}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+            <option value="false">
+              False
+            </option>
+            <option value="true">
+              True
+            </option>
+        </select>
     </div>
-
-      <div class="space-x-4">
-        <label> Tax: </label>
-        <input type="number" class="text-base px-4 py-2 border rounded-lg focus:outline-none" placeholder="Commander tax"/>
-      </div>
     `;
 
       clickedEventStats.appendChild(newItem);
+      killIndex++;
     }
   });
 
@@ -275,26 +298,43 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       "player-list"
     ) as HTMLElement;
 
+    killIndex = 0;
+    playerIndex++;
+
     const newRow = document.createElement("div");
     newRow.setAttribute("class", "player-item space-y-4");
 
     const newRowBase = `
     <hr class="my-8" />
-    <div class="player-details space-x-4">
-      <label> Player: </label>
-      <select class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
-        ${usersByGroupOptionsParsed.map(
-          (user) =>
-            `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
-              ${user.playerName}
-            </option>`
-        )}
-      </select>
+    <div class="player-details space-x-4 flex">
+      <div>
+        <label> Player: </label>
+        <select name="playerList[${playerIndex}][playerId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+          ${usersByGroupOptionsParsed.map(
+            (user) =>
+              `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
+                ${user.playerName}
+              </option>`
+          )}
+        </select>        
+      </div>
 
-      <label for="">Deck: </label>
-      <select class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks">
-        <option value="">Select a deck</option>
-      </select>
+      <div>
+        <label for="">Deck: </label>
+        <select name="playerList[${playerIndex}][deckId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks">
+          <option value="">Select a deck</option>
+        </select>        
+      </div>
+
+      <div>
+        <label for="">Commander Tax: </label>
+        <input
+        name="playerList[${playerIndex}][commanderTax]"
+        name="tax"
+        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
+        placeholder="Number of turns"
+        />
+      </div>
 
       <button
         type="button"
