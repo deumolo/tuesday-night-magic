@@ -301,6 +301,8 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       "player-list"
     ) as HTMLElement;
 
+    const playerItems = playerStatsDiv.querySelectorAll('.player-item');
+    
     killIndex = 0;
     playerIndex++;
 
@@ -309,7 +311,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     const newRowBase = `
     <hr class="my-8" />
-    <div class="player-details space-x-4 flex" data-player-index="${playerIndex}">
+    <div class="player-details space-x-4 flex" data-player-index="${playerItems.length}">
       <div>
         <label> Player: </label>
         <select name="playerList[${playerIndex}][playerId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
