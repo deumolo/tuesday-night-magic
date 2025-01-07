@@ -98,7 +98,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <div id="player-list" class="space-y-5">
       <div class="player-item space-y-4">
         <hr class="my-8" />
-        <div class="player-details space-x-4 flex">
+        <div class="player-details space-x-4 flex" data-player-index="0">
           <div>
             <label for="">Player: </label>
             <select
@@ -258,13 +258,16 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     const clickedEventStats =
       clickedEventParent.nextElementSibling as HTMLDivElement;
 
+    const clickedEventKills = clickedEventStats.querySelectorAll('.player-kill-item');
+    const clickedPlayerIndex = clickedEventParent.getAttribute("data-player-index");
+
     if (clickedEvent.classList.contains("add-kill")) {
       const newItem = document.createElement("div");
-      newItem.setAttribute("class", "flex space-x-4");
+      newItem.setAttribute("class", "flex space-x-4 player-kill-item");
       newItem.innerHTML = `
       <div class="space-x-4">
         <label> Opponent: </label>
-        <select name="playerList[${playerIndex}][${killIndex}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
         ${usersByGroupOptionsParsed.map(
           (user) =>
             `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
@@ -306,7 +309,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     const newRowBase = `
     <hr class="my-8" />
-    <div class="player-details space-x-4 flex">
+    <div class="player-details space-x-4 flex" data-player-index="${playerIndex}">
       <div>
         <label> Player: </label>
         <select name="playerList[${playerIndex}][playerId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
