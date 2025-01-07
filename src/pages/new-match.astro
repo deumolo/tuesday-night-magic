@@ -156,8 +156,8 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 <script>
   import { actions } from "astro:actions";
 
+  // Adds listener to form submit event ✅
   const form = document.querySelector("form") as HTMLFormElement;
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -166,11 +166,12 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     console.log(data);
   });
 
+  // Adds reference to add-player button ✅
   const addPlayerButton = document.getElementById(
     "add-player"
   ) as HTMLButtonElement;
 
-  // Part of the logic to get an array with all the decks in the group
+  // Part of the logic to get an array with all the decks in the group ✅
   const decksByGroup = document.getElementById(
     "deck-by-group"
   ) as HTMLSelectElement;
@@ -181,19 +182,18 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
         deckId: option.dataset.deckId,
         deckName: option.dataset.deckName,
         userId: option.dataset.userId,
-        userName: option.dataset.userName,
       };
     }
   );
 
-  // Part of the logic to get an array with all the users in the group
+  // Part of the logic to get an array with all the users in the group to populate dynamically added players ✅
   const usersByGroup = document.querySelector(
     ".player-select"
   ) as HTMLSelectElement;
   const usersByGroupOptions = usersByGroup.options;
   const usersByGroupOptionsParsed = Array.from(usersByGroupOptions).map(
     (option) => {
-      if (option.dataset.playerId === undefined) {
+      if (option.value === "") {
         return {
           playerId: "",
           playerName: "Select a player",
@@ -207,8 +207,10 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   );
 
+  // Adds reference to the player list ✅
   const playerList = document.getElementById("player-list") as HTMLDivElement;
 
+  // Part of the logic that detects when a player select dropdown is changed and populates that player's decks dynamically
   playerList.addEventListener("change", (event) => {
     const changedEvent = event.target as HTMLSelectElement;
     if (
@@ -218,10 +220,8 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       const selectedValue = changedEvent.value;
 
       //This is the shared space for the two select menus
-      const changedEventParent = changedEvent.parentElement?.parentElement as HTMLElement;
-
-      // console.log("Selected value:", selectedValue);
-      console.log("Parent:", changedEventParent);
+      const changedEventParent = changedEvent.parentElement
+        ?.parentElement as HTMLElement;
 
       const decksBySelectedUser = changedEventParent.querySelector(
         ".player-decks"
@@ -233,15 +233,14 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
       decksBySelectedUserData.unshift({
         deckId: "",
-        deckName: "Select a deck",
         userId: "",
-        userName: undefined,
+        deckName: "Select a deck",
       });
 
       decksBySelectedUser.innerHTML = `
         ${decksBySelectedUserData.map(
           (deck) =>
-            `<option data-deck-id="${deck.deckId}" data-deck-name="${deck.deckName}" data-user-id="${deck.userId}" value="${deck.deckId}">
+            `<option value="${deck.deckId}">
               ${deck.deckName}
             </option>`
         )}
@@ -249,17 +248,16 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   });
 
-  let playerIndex = 0;
-  let killIndex = 0;
-
   playerList.addEventListener("click", (event) => {
     const clickedEvent = event.target as HTMLButtonElement;
     const clickedEventParent = clickedEvent.parentElement as HTMLDivElement;
     const clickedEventStats =
       clickedEventParent.nextElementSibling as HTMLDivElement;
 
-    const clickedEventKills = clickedEventStats.querySelectorAll('.player-kill-item');
-    const clickedPlayerIndex = clickedEventParent.getAttribute("data-player-index");
+    const clickedEventKills =
+      clickedEventStats.querySelectorAll(".player-kill-item");
+    const clickedPlayerIndex =
+      clickedEventParent.getAttribute("data-player-index");
 
     if (clickedEvent.classList.contains("add-kill")) {
       const newItem = document.createElement("div");
@@ -280,7 +278,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     <div class="space-x-4 flex items-center">
       <label for="commander-damage">Commander damage:</label>
-        <select name="playerList[${playerIndex}][${killIndex}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
             <option value="false">
               False
             </option>
@@ -292,7 +290,6 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     `;
 
       clickedEventStats.appendChild(newItem);
-      killIndex++;
     }
   });
 
@@ -301,10 +298,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       "player-list"
     ) as HTMLElement;
 
-    const playerItems = playerStatsDiv.querySelectorAll('.player-item');
-    
-    killIndex = 0;
-    playerIndex++;
+    const playerItems = playerStatsDiv.querySelectorAll(".player-item");
 
     const newRow = document.createElement("div");
     newRow.setAttribute("class", "player-item space-y-4");
@@ -314,7 +308,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <div class="player-details space-x-4 flex" data-player-index="${playerItems.length}">
       <div>
         <label> Player: </label>
-        <select name="playerList[${playerIndex}][playerId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${playerItems.length}][playerId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
           ${usersByGroupOptionsParsed.map(
             (user) =>
               `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
@@ -326,7 +320,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
       <div>
         <label for="">Deck: </label>
-        <select name="playerList[${playerIndex}][deckId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks">
+        <select name="playerList[${playerItems.length}][deckId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks">
           <option value="">Select a deck</option>
         </select>        
       </div>
@@ -334,7 +328,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       <div>
         <label for="">Commander Tax: </label>
         <input
-        name="playerList[${playerIndex}][commanderTax]"
+        name="playerList[${playerItems.length}][commanderTax]"
         name="tax"
         class="text-base px-4 py-2 border rounded-lg focus:outline-none"
         placeholder="Number of turns"
