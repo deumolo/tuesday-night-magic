@@ -248,16 +248,20 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   });
 
+  // Part of the logic that detects when a player adds a new kill item
   playerList.addEventListener("click", (event) => {
+    // add-kill button
     const clickedEvent = event.target as HTMLButtonElement;
-    const clickedEventParent = clickedEvent.parentElement as HTMLDivElement;
-    const clickedEventStats =
-      clickedEventParent.nextElementSibling as HTMLDivElement;
+
+    // player stats section
+    const clickedEventStats = clickedEvent.parentElement
+      ?.nextElementSibling as HTMLDivElement;
 
     const clickedEventKills =
       clickedEventStats.querySelectorAll(".player-kill-item");
+
     const clickedPlayerIndex =
-      clickedEventParent.getAttribute("data-player-index");
+      clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
 
     if (clickedEvent.classList.contains("add-kill")) {
       const newItem = document.createElement("div");
@@ -293,6 +297,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   });
 
+  // Part of the logic that detects when a new player is added
   addPlayerButton.addEventListener("click", () => {
     const playerStatsDiv = document.getElementById(
       "player-list"
