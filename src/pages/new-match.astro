@@ -59,7 +59,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
         />
       </div>
 
-      <div class="flex align-items-center space-x-4">
+      <div class="flex items-center space-x-4">
         <button
           type="button"
           id="add-player"
@@ -108,13 +108,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
               <option value="">Select a player</option>
               {
                 data?.users?.map((user) => (
-                  <option
-                    data-player-name={user.name}
-                    data-player-id={user.id}
-                    value={user.id}
-                  >
-                    {user.name}
-                  </option>
+                  <option value={user.id}>{user.name}</option>
                 ))
               }
             </select>
@@ -272,7 +266,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
         <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
         ${usersByGroupOptionsParsed.map(
           (user) =>
-            `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
+            `<option value="${user.playerId}">
               ${user.playerName}
             </option>`
         )}
@@ -316,7 +310,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
         <select name="playerList[${playerItems.length}][playerId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
           ${usersByGroupOptionsParsed.map(
             (user) =>
-              `<option data-player-name="${user.playerName}" data-player-id="${user.playerId}" value="${user.playerId}">
+              `<option value="${user.playerId}">
                 ${user.playerName}
               </option>`
           )}
