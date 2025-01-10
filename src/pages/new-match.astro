@@ -150,7 +150,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 <script>
   import { actions } from "astro:actions";
 
-  // Adds listener to form submit event ✅
+  // Adds listener to form submit event
   const form = document.querySelector("form") as HTMLFormElement;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -163,12 +163,12 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
   });
 
-  // Adds reference to add-player button ✅
+  // Adds reference to add-player button
   const addPlayerButton = document.getElementById(
     "add-player"
   ) as HTMLButtonElement;
 
-  // Part of the logic to get an array with all the decks in the group ✅
+  // Part of the logic to get an array with all the decks in the group
   const decksByGroup = document.getElementById(
     "deck-by-group"
   ) as HTMLSelectElement;
@@ -183,7 +183,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   );
 
-  // Part of the logic to get an array with all the users in the group to populate dynamically added players ✅
+  // Part of the logic to get an array with all the users in the group to populate dynamically added players
   const usersByGroup = document.querySelector(
     ".player-select"
   ) as HTMLSelectElement;
@@ -204,7 +204,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     }
   );
 
-  // Adds reference to the player list ✅
+  // Adds reference to the player list
   const playerList = document.getElementById("player-list") as HTMLDivElement;
 
   // Part of the logic that detects when a player select dropdown is changed and populates that player's decks dynamically
