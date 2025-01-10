@@ -15,7 +15,10 @@ const playerSchema = z.object({
 
 const matchSchema = z.object({
   groupId: z.string().nonempty("Group id is required"),
-  turns: z.number().int().positive(),
+  turns: z.union([
+    z.string(),
+    z.number().min(1, { message: "Turns must be greater than 1" }),
+  ]),
   winner: z.string().nonempty("Winner id is required"),
   players: z.array(playerSchema).min(1, "At least one player is required"),
 });
@@ -29,7 +32,7 @@ export const newMatch = defineAction({
       console.log(input);
 
       interface Player {
-        kills: Array<{ commanderDamage?: string; [key: string]: any }>;
+        kills: Array<{ commanderDamage: boolean; opponentId: string }>;
         [key: string]: any;
       }
 
@@ -89,15 +92,18 @@ export const newMatch = defineAction({
             }
           }
         } else {
-          // Handle global keys outside playerList
-          if (name === "group" || name === "turns" || name === "winner") {
-            groupedData[name] = value.toString();
+          if (name === "turns") {
+            if (value === "") {
+              groupedData[name] = '';
+            } else {
+              groupedData[name] = +value;
+            }
+          } else {
+            // Handle global keys outside playerList
+            groupedData[name] = value;
           }
         }
       }
-
-      groupedData.groupId = formData.get("groupId");
-      groupedData.turns = +groupedData.turns;
 
       console.log(groupedData);
       console.log(JSON.stringify(groupedData));
