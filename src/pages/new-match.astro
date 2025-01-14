@@ -127,8 +127,8 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
           <div>
             <label for="">Commander Tax: </label>
             <input
+              type="number"
               name="playerList[0][commanderTax]"
-              name="tax"
               class="text-base px-4 py-2 border rounded-lg focus:outline-none"
               placeholder="Number of turns"
             />

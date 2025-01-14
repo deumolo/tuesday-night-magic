@@ -16,7 +16,7 @@ const playerSchema = z.object({
 const matchSchema = z.object({
   groupId: z.string().nonempty("Group id is required"),
   turns: z.union([
-    z.string(),
+    z.null(),
     z.number().min(1, { message: "Turns must be greater than 1" }),
   ]),
   winner: z.string().nonempty("Winner id is required"),
@@ -39,14 +39,14 @@ export const newMatch = defineAction({
       // Initialize groupedData with the desired structure
       const groupedData: {
         groupId: string | null;
-        turns: string | null;
+        turns: number | null;
         winner: string | null;
         players: Player[];
       } = {
-        groupId: null, // Default value; can be updated later
-        turns: null, // Default value; can be updated later
-        winner: null, // Default value; can be updated later
-        players: [] as Player[], // Array to hold player objects
+        groupId: null, 
+        turns: null, 
+        winner: null, 
+        players: [] as Player[],
       };
 
       for (let [name, value] of formData.entries()) {
@@ -94,7 +94,7 @@ export const newMatch = defineAction({
         } else {
           if (name === "turns") {
             if (value === "") {
-              groupedData[name] = '';
+              groupedData[name] = null;
             } else {
               groupedData[name] = +value;
             }
@@ -107,7 +107,6 @@ export const newMatch = defineAction({
 
       console.log(groupedData);
       console.log(JSON.stringify(groupedData));
-
       matchSchema.parse(groupedData);
 
       return { success: true, message: groupedData };
