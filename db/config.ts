@@ -43,9 +43,19 @@ const Match = defineTable({
 
 const UserGroup = defineTable({
   columns: {
+    id: column.text({ primaryKey: true, unique: true }),
     userId: column.text({ references: () => User.columns.id }),
     groupId: column.text({ references: () => Group.columns.id }),
     role: column.text({ optional: true }),
+    createdAt: column.date({ default: new Date() }),
+  },
+});
+
+const PlayerMatches = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true, unique: true }),
+    playerId: column.text({ references: () => User.columns.id }),
+    matchId: column.text({ references: () => Match.columns.id }),
     createdAt: column.date({ default: new Date() }),
   },
 });
@@ -69,5 +79,6 @@ export default defineDb({
     Match,
     UserGroup,
     MatchPlayerStats,
+    PlayerMatches,
   },
 });
