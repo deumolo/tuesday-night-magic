@@ -1,5 +1,8 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
+import { db, Match, MatchPlayerStats, PlayerMatches } from "astro:db";
+import { v4 as UUID } from "uuid";
+import type { BatchItem } from "drizzle-orm/batch";
 
 const killSchema = z.object({
   opponentId: z.string().nonempty("Opponent id is required"),
@@ -19,7 +22,7 @@ const matchSchema = z.object({
     z.null(),
     z.number().min(1, { message: "Turns must be greater than 1" }),
   ]),
-  winner: z.string().nonempty("Winner id is required"),
+  winnerId: z.string().nonempty("Winner id is required"),
   players: z.array(playerSchema).min(1, "At least one player is required"),
 });
 
@@ -40,12 +43,12 @@ export const newMatch = defineAction({
       const groupedData: {
         groupId: string | null;
         turns: number | null;
-        winner: string | null;
+        winnerId: string | null;
         players: Player[];
       } = {
-        groupId: null, 
-        turns: null, 
-        winner: null, 
+        groupId: null,
+        turns: null,
+        winnerId: null,
         players: [] as Player[],
       };
 
@@ -108,6 +111,32 @@ export const newMatch = defineAction({
       console.log(groupedData);
       console.log(JSON.stringify(groupedData));
       matchSchema.parse(groupedData);
+
+      const queries: BatchItem<"sqlite">[] = [];
+      const newMatchId = UUID();
+
+      const newMatch = await db.insert(Match).values({
+        id: newMatchId,
+        groupId: groupedData.groupId ?? "",
+        turns: groupedData.turns,
+        winnerId: groupedData.winnerId ?? "",
+      });
+
+      console.log(JSON.stringify(newMatch));
+
+      for (const player of groupedData.players) {
+        queries.push(
+          db.insert(PlayerMatches).values({
+            id: UUID(),
+            playerId: player.playerId ?? "",
+            matchId: newMatchId,
+          })
+        );
+      }
+
+      if (queries.length > 0) {
+        await db.batch([queries[0], ...queries.slice(1)]);
+      }
 
       return { success: true, message: groupedData };
     } catch (err) {
