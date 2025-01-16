@@ -68,14 +68,19 @@ export const newMatch = defineAction({
           // Add a new kill item or update the last one based on the key
           const killItemIndex = parseInt(matchkill[2], 10); // Get the kill index
           if (!groupedData.players[playerIndex].kills[killItemIndex]) {
-            groupedData.players[playerIndex].kills[killItemIndex] = {};
+            groupedData.players[playerIndex].kills[killItemIndex] = {
+              commanderDamage: false,
+              opponentId: "",
+            };
           }
 
           if (key === "commanderDamage") {
-            groupedData.players[playerIndex].kills[killItemIndex][key] =
-              value === "true";
-          } else {
-            groupedData.players[playerIndex].kills[killItemIndex][key] = value;
+            groupedData.players[playerIndex].kills[
+              killItemIndex
+            ].commanderDamage = value === "true";
+          } else if (key === "opponentId") {
+            groupedData.players[playerIndex].kills[killItemIndex].opponentId =
+              String(value);
           }
         } else if (match) {
           const playerIndex = parseInt(match[1], 10); // Convert index to a number
@@ -103,7 +108,9 @@ export const newMatch = defineAction({
             }
           } else {
             // Handle global keys outside playerList
-            groupedData[name] = value;
+            if (name === "groupId" || name === "winnerId") {
+              groupedData[name] = String(value);
+            }
           }
         }
       }
@@ -132,6 +139,19 @@ export const newMatch = defineAction({
             matchId: newMatchId,
           })
         );
+
+        for (const kill of player.kills) {
+          queries.push(
+            db.insert(MatchPlayerStats).values({
+              id: UUID(),
+              matchId: newMatchId,
+              playerId: player.playerId,
+              opponentId: kill.opponentId,
+              killedWithCommanderDamage: kill.commanderDamage,
+            })
+          );
+        }
+        
       }
 
       if (queries.length > 0) {
