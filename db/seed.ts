@@ -71,9 +71,9 @@ export default async function () {
   ]);
 
   await db.insert(UserGroup).values([
-    { userId: user1id, groupId: group1id },
-    { userId: user2id, groupId: group1id },
-    { userId: user3id, groupId: group1id },
-    { userId: user4id, groupId: group1id },
+    { id: UUID(), userId: user1id, groupId: group1id },
+    { id: UUID(), userId: user2id, groupId: group1id },
+    { id: UUID(), userId: user3id, groupId: group1id },
+    { id: UUID(), userId: user4id, groupId: group1id },
   ]);
 }
