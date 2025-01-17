@@ -36,6 +36,22 @@ const playerSchema = z
       message: "Player cannot kill themselves",
       path: ["kills"], // Point to the kills array for the error
     }
+  )
+  .refine(
+    (player) => {
+      const seenIds = new Set();
+      for (const obj of player.kills ?? []) {
+        if (seenIds.has(obj.opponentId)) {
+          return false;
+        }
+        seenIds.add(obj.opponentId);
+      }
+      return true;
+    },
+    {
+      message: "Player can't duplicate kill",
+      path: ["kills"], // Point to the kills array for the error
+    }
   );
 
 const matchSchema = z
@@ -166,12 +182,12 @@ export const newMatch = defineAction({
     try {
       const formData = await request.formData();
 
-      console.log(formData);
+      // console.log(formData);
       // console.log(transformFormData(formData));
       // console.log(JSON.stringify(transformFormData(formData)));
 
       const groupedData = transformFormData(formData);
-      console.log(JSON.stringify(groupedData));
+      // console.log(JSON.stringify(groupedData));
 
       matchSchema.parse(groupedData);
 
@@ -185,7 +201,7 @@ export const newMatch = defineAction({
         winnerId: groupedData.winnerId ?? "",
       });
 
-      console.log(JSON.stringify(newMatch));
+      // console.log(JSON.stringify(newMatch));
 
       for (const player of groupedData.players) {
         queries.push(
