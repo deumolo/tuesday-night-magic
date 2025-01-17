@@ -24,7 +24,12 @@ const playerSchema = z
         message: "Player id is required",
       }),
     deckId: z.string().nullable().optional(),
-    commanderTax: z.number().nullable(),
+    commanderTax: z.union([
+      z.null(),
+      z.optional(
+        z.number().min(0, { message: "Commander tax must be 1 or greater" })
+      ),
+    ]),
   })
   .refine(
     (player) => {
@@ -187,7 +192,7 @@ export const newMatch = defineAction({
       // console.log(JSON.stringify(transformFormData(formData)));
 
       const groupedData = transformFormData(formData);
-      // console.log(JSON.stringify(groupedData));
+      console.log(JSON.stringify(groupedData));
 
       matchSchema.parse(groupedData);
 
