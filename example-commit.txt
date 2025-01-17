@@ -1,0 +1,2 @@
+feat(dependencies): install uuid package
+Added the uuid package to the project for db purposes

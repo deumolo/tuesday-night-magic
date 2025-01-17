@@ -9,8 +9,10 @@ import netlify from '@astrojs/netlify';
 
 import auth from 'auth-astro';
 
+import icon from 'astro-icon';
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [db(), tailwind(), auth()],
+  integrations: [db(), tailwind(), auth(), icon()],
   adapter: netlify()
 });

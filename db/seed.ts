@@ -1,34 +1,45 @@
 import { db, Group, User, Deck, UserGroup } from "astro:db";
+import { v4 as UUID } from "uuid";
+
+const group1id = UUID();
+const group2id = UUID();
+const group3id = UUID();
+const group4id = UUID();
+
+const user1id = UUID();
+const user2id = UUID();
+const user3id = UUID();
+const user4id = UUID();
 
 export default async function () {
   await db.insert(Group).values([
-    { id: "123123123123", name: "Kasim", private: false, password: "1234" },
-    { id: "234234234234", name: "Tarkin", private: false, password: "1234" },
-    { id: "345345345345", name: "Innistrad", private: false, password: "1234" },
-    { id: "456456456456", name: "Starwars", private: false, password: "1234" },
+    { id: group1id, name: "Kasim", private: false, password: "1234" },
+    { id: group2id, name: "Tarkin", private: false, password: "1234" },
+    { id: group3id, name: "Innistrad", private: false, password: "1234" },
+    { id: group4id, name: "Starwars", private: false, password: "1234" },
   ]);
 
   await db.insert(User).values([
     {
-      id: "123123123123",
+      id: user1id,
       name: "Daniel Moreno",
       email: "dmoreno@gmail.com",
       password: "1234",
     },
     {
-      id: "234234234234",
+      id: user2id,
       name: "Ricardo Luna",
       email: "rluna@gmail.com",
       password: "1234",
     },
     {
-      id: "345345345345",
+      id: user3id,
       name: "Guillermo Silva",
       email: "gsilva@gmail.com",
       password: "1234",
     },
     {
-      id: "456456456456",
+      id: user4id,
       name: "Alejandro Silva",
       email: "asilva@gmail.com",
       password: "1234",
@@ -37,32 +48,32 @@ export default async function () {
 
   await db.insert(Deck).values([
     {
-      id: "123123123123",
+      id: UUID(),
       name: "Spirit Squadron",
       private: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
-      userId: "123123123123",
+      userId: user1id,
     },
     {
-      id: "123123123124",
+      id: UUID(),
       name: "Dogmeat",
       private: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
-      userId: "123123123123",
+      userId: user1id,
     },
     {
-      id: "12312312312433311",
+      id: UUID(),
       name: "Jinnie Faye",
       private: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
-      userId: "234234234234",
+      userId: user2id,
     },
   ]);
 
   await db.insert(UserGroup).values([
-    { userId: "123123123123", groupId: "234234234234" },
-    { userId: "234234234234", groupId: "234234234234" },
-    { userId: "345345345345", groupId: "234234234234" },
-    { userId: "456456456456", groupId: "234234234234" },
+    { userId: user1id, groupId: group1id },
+    { userId: user2id, groupId: group1id },
+    { userId: user3id, groupId: group1id },
+    { userId: user4id, groupId: group1id },
   ]);
 }
