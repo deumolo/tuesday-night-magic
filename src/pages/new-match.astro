@@ -40,7 +40,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <div class="hidden">
       <label class="">Group:</label>
       <input
-        value="ee1986a2-e94c-4c27-b321-abd4e6795862"
+        value="8c9ca8e4-c748-4574-a15a-6621b51d415b"
         type="text"
         name="groupId"
         class="text-base px-4 py-2 border rounded-lg focus:outline-none"
@@ -248,19 +248,20 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
   // Part of the logic that detects when a player adds a new kill item
   playerList.addEventListener("click", (event) => {
     // add-kill button
-    const clickedEvent = event.target as HTMLButtonElement;
+    const target = event.target as HTMLElement | null;
+    const clickedEvent = target?.closest('button') as HTMLButtonElement | null;
 
-    // player stats section
-    const clickedEventStats = clickedEvent.parentElement
-      ?.nextElementSibling as HTMLDivElement;
+    if (clickedEvent && clickedEvent.classList.contains("add-kill")) {
+      // player stats section
+      const clickedEventStats = clickedEvent.parentElement
+        ?.nextElementSibling as HTMLDivElement;
 
-    const clickedEventKills =
-      clickedEventStats.querySelectorAll(".player-kill-item");
+      const clickedEventKills =
+        clickedEventStats.querySelectorAll(".player-kill-item");
 
-    const clickedPlayerIndex =
-      clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
+      const clickedPlayerIndex =
+        clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
 
-    if (clickedEvent.classList.contains("add-kill")) {
       const newItem = document.createElement("div");
       newItem.setAttribute("class", "flex space-x-4 player-kill-item");
       newItem.innerHTML = `
@@ -290,11 +291,17 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     </div>
 
     <div class="flex items-center cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
+      <button class="delete-kill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
+      </button>
     </div>
     `;
 
       clickedEventStats.appendChild(newItem);
+    }
+
+    if (clickedEvent && clickedEvent.classList.contains("delete-kill")) {
+      clickedEvent.parentElement?.parentElement?.remove();
     }
   });
 
@@ -321,9 +328,11 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
           name="playerList[${playerItems.length}][playerId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
         >
-          ${usersByGroupOptionsParsed.map( (user) => `
+          ${usersByGroupOptionsParsed.map(
+            (user) => `
           <option value="${user.playerId}">${user.playerName}</option>
-          ` )}
+          `
+          )}
         </select>
       </div>
 
