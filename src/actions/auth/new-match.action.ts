@@ -38,25 +38,42 @@ const playerSchema = z
     }
   );
 
-const matchSchema = z.object({
-  groupId: z
-    .string()
-    .nullable()
-    .refine((val) => val !== null, {
-      message: "Group id is required",
-    }),
-  turns: z.union([
-    z.null(),
-    z.number().min(1, { message: "Turns must be greater than 1" }),
-  ]),
-  winnerId: z
-    .string()
-    .nullable()
-    .refine((val) => val !== null, {
-      message: "Winner id is required",
-    }),
-  players: z.array(playerSchema).min(2, "At least two players are required"),
-});
+const matchSchema = z
+  .object({
+    groupId: z
+      .string()
+      .nullable()
+      .refine((val) => val !== null, {
+        message: "Group id is required",
+      }),
+    turns: z.union([
+      z.null(),
+      z.number().min(1, { message: "Turns must be greater than 1" }),
+    ]),
+    winnerId: z
+      .string()
+      .nullable()
+      .refine((val) => val !== null, {
+        message: "Winner id is required",
+      }),
+    players: z.array(playerSchema).min(2, "At least two players are required"),
+  })
+  .refine(
+    (match) => {
+      const seenIds = new Set();
+      for (const obj of match.players) {
+        if (seenIds.has(obj.playerId)) {
+          return false;
+        }
+        seenIds.add(obj.playerId);
+      }
+      return true;
+    },
+    {
+      message: "Players cannot appear twice",
+      path: ["players"], // Point to the kills array for the error
+    }
+  );
 
 interface Player {
   id: string;
