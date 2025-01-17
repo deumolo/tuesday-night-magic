@@ -55,7 +55,7 @@ const matchSchema = z.object({
     .refine((val) => val !== null, {
       message: "Winner id is required",
     }),
-  players: z.array(playerSchema).min(1, "At least one player is required"),
+  players: z.array(playerSchema).min(2, "At least two players are required"),
 });
 
 interface Player {
