@@ -11,6 +11,7 @@ const { data: decksData, error: decksError } = await Astro.callAction(
 );
 
 const { data, error } = await Astro.callAction(actions.getUsers, {});
+const basePlayerIndex = uuidv4();
 ---
 
 <Layout>
@@ -98,12 +99,12 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <div id="player-list" class="space-y-5">
       <div class="player-item space-y-4">
         <hr class="my-8" />
-        <div class="player-details space-x-4 flex" data-player-index="0">
+        <div class="player-details space-x-4 flex" data-player-index={basePlayerIndex}>
           <div>
             <label for="">Player: </label>
             <select
               class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
-              name="playerList[0][playerId]"
+              name=`playerList[${basePlayerIndex}][playerId]`
             >
               <option value="">Select a player</option>
               {
@@ -117,7 +118,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
           <div>
             <label for="">Deck: </label>
             <select
-              name="playerList[0][deckId]"
+              name=`playerList[${basePlayerIndex}][deckId]`
               class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
             >
               <option value="">Select a deck</option>
@@ -128,7 +129,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
             <label for="">Commander Tax: </label>
             <input
               type="number"
-              name="playerList[0][commanderTax]"
+              name=`playerList[${basePlayerIndex}][commanderTax]`
               class="text-base px-4 py-2 border rounded-lg focus:outline-none"
               placeholder="Tax"
             />
@@ -149,6 +150,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
 <script>
   import { actions } from "astro:actions";
+  import { v4 as uuidv4 } from "uuid";
 
   // Adds listener to form submit event
   const form = document.querySelector("form") as HTMLFormElement;
@@ -262,12 +264,14 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       const clickedPlayerIndex =
         clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
 
+      const randomIndex = uuidv4();
+
       const newItem = document.createElement("div");
       newItem.setAttribute("class", "flex space-x-4 player-kill-item");
       newItem.innerHTML = `
       <div class="space-x-4">
         <label> Opponent: </label>
-        <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${clickedPlayerIndex}][${randomIndex}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
         ${usersByGroupOptionsParsed.map(
           (user) =>
             `<option value="${user.playerId}">
@@ -280,7 +284,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     <div class="space-x-4 flex items-center">
       <label for="commander-damage">Commander damage:</label>
-        <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${clickedPlayerIndex}][${randomIndex}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
             <option value="false">
               False
             </option>
@@ -311,6 +315,9 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
   // Part of the logic that detects when a new player is added
   addPlayerButton.addEventListener("click", () => {
+
+    const newPlayerIndex = uuidv4();
+
     const playerStatsDiv = document.getElementById(
       "player-list"
     ) as HTMLElement;
@@ -324,12 +331,12 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <hr class="my-8" />
     <div
       class="player-details space-x-4 flex"
-      data-player-index="${playerItems.length}"
+      data-player-index="${newPlayerIndex}"
     >
       <div>
         <label> Player: </label>
         <select
-          name="playerList[${playerItems.length}][playerId]"
+          name="playerList[${newPlayerIndex}][playerId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
         >
           ${usersByGroupOptionsParsed.map(
@@ -343,7 +350,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       <div>
         <label for="">Deck: </label>
         <select
-          name="playerList[${playerItems.length}][deckId]"
+          name="playerList[${newPlayerIndex}][deckId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
         >
           <option value="">Select a deck</option>
@@ -353,7 +360,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       <div>
         <label for="">Commander Tax: </label>
         <input
-          name="playerList[${playerItems.length}][commanderTax]"
+          name="playerList[${newPlayerIndex}][commanderTax]"
           name="tax"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none"
           placeholder="Tax"
