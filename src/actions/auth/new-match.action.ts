@@ -185,14 +185,14 @@ export const newMatch = defineAction({
   accept: "form",
   handler: async (input, { request, cookies }) => {
     try {
+    
       const formData = await request.formData();
+      const groupedData = transformFormData(formData);
 
       // console.log(formData);
       // console.log(transformFormData(formData));
-      // console.log(JSON.stringify(transformFormData(formData)));
-
-      const groupedData = transformFormData(formData);
-      console.log(JSON.stringify(groupedData));
+      // console.log(JSON.stringify(transformFormData(formData)));      
+      // console.log(JSON.stringify(groupedData));
 
       matchSchema.parse(groupedData);
 
