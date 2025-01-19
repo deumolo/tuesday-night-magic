@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import ModalWindow from "../components/ModalWindow.astro";
 ---
 
 <Layout>
@@ -38,7 +39,7 @@ import Layout from "../layouts/Layout.astro";
             class="w-full text-base px-4 py-2 border rounded-lg focus:outline-none"
             type="text"
             name="name"
-            placeholder="New group name"
+            placeholder="Deck name"
             value=""
           />
         </div>
@@ -60,7 +61,7 @@ import Layout from "../layouts/Layout.astro";
             class="w-full text-base px-4 py-2 border rounded-lg focus:outline-none"
             type="text"
             name="moxfieldLink"
-            placeholder="Deck's moxfield link"
+            placeholder="Moxfield link"
             value=""
           />
         </div>
@@ -71,7 +72,7 @@ import Layout from "../layouts/Layout.astro";
             class="w-full text-base px-4 py-2 border rounded-lg focus:outline-none"
             type="text"
             name="userId"
-            placeholder="Deck's user id"
+            placeholder="User id"
             value=""
           />
         </div>
@@ -79,9 +80,9 @@ import Layout from "../layouts/Layout.astro";
           <button
             type="submit"
             id="btn-submit"
-            class="disabled:bg-gray-200 disabled:cursor-not-allowed w-full flex justify-center p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500"
+            class="disabled:bg-gray-200 disabled:cursor-not-allowed w-full flex justify-center p-3 rounded-full tracking-wide font-semibold cursor-pointer transition ease-in duration-500"
           >
-            Ingresar
+            Create
           </button>
         </div>
       </form>
@@ -98,17 +99,29 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </div>
+
+  <ModalWindow title="Deck" />
 </Layout>
 
 <script>
   import { actions } from "astro:actions";
 
+  const closeModalButton = document.getElementById(
+    "close-modal"
+  ) as HTMLButtonElement;
+
+  closeModalButton.addEventListener("click", () => {
+    const modalWindow = document.getElementById(
+      "modal-window"
+    ) as HTMLDivElement;
+
+    modalWindow.classList.add("hidden");
+  });
+
   const form = document.querySelector("form") as HTMLFormElement;
   const btnSubmit = document.querySelector("#btn-submit") as HTMLButtonElement;
   const errorAlert = document.querySelector("#error-alert") as HTMLDivElement;
-  const errorAlertMessage = document.querySelector(
-    "#error-alert-message"
-  ) as HTMLSpanElement;
+
   const closeErrorAlert = document.querySelector(
     "#close-error-alert"
   ) as HTMLButtonElement;
@@ -119,38 +132,39 @@ import Layout from "../layouts/Layout.astro";
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    errorAlert.classList.add("invisible");
+
     btnSubmit.setAttribute("disabled", "disabled");
-
     const formData = new FormData(form);
-
     const { data, error } = await actions.createDeck(formData);
 
-    if (error) {
-      const jsonMatch = error.message.match(/\[.*\]/s);
+    if (data) {
+      if (data.success) {
+        console.log("success block: ", data);
+      } else {
+        const modalWindow = document.getElementById(
+          "modal-window"
+        ) as HTMLDivElement;
 
-      let errors = [];
+        const modalWindowContentDiv = modalWindow.querySelector(
+          ".modal-window-content"
+        ) as HTMLDivElement;
 
-      if (jsonMatch) {
-        errors = JSON.parse(jsonMatch[0]);
+        modalWindowContentDiv.innerHTML = `
+        <div class="text-sm text-gray-500">
+          <ul>
+            ${data.error ? data.error.map((error) => `<li>${typeof error === "string" ? error : error.message}</li>`).join("") : ""}
+          </ul>
+        </div>
+      `;
+
+        modalWindow.classList.remove("hidden");
       }
-
-      const ulHTML = `
-      <ul>
-        ${errors.map((error: any) => `<li>${error.path.join(".")}: ${error.message}</li>`).join("")}
-      </ul>
-    `;
-
-      errorAlertMessage.innerHTML = ulHTML;
-
-      errorAlert.classList.remove("invisible");
-      btnSubmit.removeAttribute("disabled");
-      return;
     }
 
-    console.log("data: ", data);
+    if (error) {
+      console.error("error block: ", error);
+    }
 
-    // window.location.href = "/";
     btnSubmit.removeAttribute("disabled");
   });
 </script>

@@ -24,7 +24,7 @@ const Deck = defineTable({
   columns: {
     id: column.text({ primaryKey: true, unique: true }),
     name: column.text(),
-    private: column.boolean({ default: false }),
+    privateDeck: column.boolean({ default: false }),
     moxfieldLink: column.text(),
     userId: column.text({ references: () => User.columns.id }),
     createdAt: column.date({ default: new Date() }),
