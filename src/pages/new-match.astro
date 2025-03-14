@@ -11,6 +11,7 @@ const { data: decksData, error: decksError } = await Astro.callAction(
 );
 
 const { data, error } = await Astro.callAction(actions.getUsers, {});
+const basePlayerIndex = uuidv4();
 ---
 
 <Layout>
@@ -37,10 +38,11 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       </select>
     </div>
 
-    <div class="hidden">
+    <!-- d664ebc8-7c76-42e8-bb70-0a37bbe74387 -->
+    <div class="">
       <label class="">Group:</label>
       <input
-        value="ee1986a2-e94c-4c27-b321-abd4e6795862"
+        value=""
         type="text"
         name="groupId"
         class="text-base px-4 py-2 border rounded-lg focus:outline-none"
@@ -98,12 +100,15 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <div id="player-list" class="space-y-5">
       <div class="player-item space-y-4">
         <hr class="my-8" />
-        <div class="player-details space-x-4 flex" data-player-index="0">
+        <div
+          class="player-details space-x-4 flex"
+          data-player-index={basePlayerIndex}
+        >
           <div>
             <label for="">Player: </label>
             <select
               class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
-              name="playerList[0][playerId]"
+              name=`playerList[${basePlayerIndex}][playerId]`
             >
               <option value="">Select a player</option>
               {
@@ -117,7 +122,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
           <div>
             <label for="">Deck: </label>
             <select
-              name="playerList[0][deckId]"
+              name=`playerList[${basePlayerIndex}][deckId]`
               class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
             >
               <option value="">Select a deck</option>
@@ -128,9 +133,9 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
             <label for="">Commander Tax: </label>
             <input
               type="number"
-              name="playerList[0][commanderTax]"
+              name=`playerList[${basePlayerIndex}][commanderTax]`
               class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-              placeholder="Number of turns"
+              placeholder="Tax"
             />
           </div>
 
@@ -145,10 +150,106 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       </div>
     </div>
   </form>
+
+  <div
+    class="relative z-10 hidden"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+    id="modal-window"
+  >
+    <!--
+      Background backdrop, show/hide based on modal state.
+  
+      Entering: "ease-out duration-300"
+        From: "opacity-0"
+        To: "opacity-100"
+      Leaving: "ease-in duration-200"
+        From: "opacity-100"
+        To: "opacity-0"
+    -->
+    <div
+      class="fixed inset-0 bg-gray-500/75 transition-opacity"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <!--
+          Modal panel, show/hide based on modal state.
+  
+          Entering: "ease-out duration-300"
+            From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            To: "opacity-100 translate-y-0 sm:scale-100"
+          Leaving: "ease-in duration-200"
+            From: "opacity-100 translate-y-0 sm:scale-100"
+            To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        -->
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+        >
+          <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div
+                class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10"
+              >
+                <svg
+                  class="size-6 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  data-slot="icon"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <h3
+                  class="text-base font-semibold text-gray-900"
+                  id="modal-title"
+                >
+                  Match not created
+                </h3>
+                <div class="mt-2 modal-window-content">
+                  <p class="text-sm text-gray-500">
+                    Are you sure you want to deactivate your account? All of
+                    your data will be permanently removed. This action cannot be
+                    undone.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              id="close-modal"
+              type="button"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+              >Close</button
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script>
   import { actions } from "astro:actions";
+  import { v4 as uuidv4 } from "uuid";
+
+  const closeModalButton = document.getElementById(
+    "close-modal"
+  ) as HTMLButtonElement;
 
   // Adds listener to form submit event
   const form = document.querySelector("form") as HTMLFormElement;
@@ -157,10 +258,36 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     const formData = new FormData(form);
     const { data, error } = await actions.newMatch(formData);
-    
-    if(data) console.log(data)
-    if(error) console.log(error)
 
+    if (data) {
+      if (data.success) {
+        console.log("success block: ", data);
+      } else {
+        console.log(data.error);
+
+        const modalWindow = document.getElementById(
+          "modal-window"
+        ) as HTMLDivElement;
+
+        const modalWindowContentDiv = modalWindow.querySelector(
+          ".modal-window-content"
+        ) as HTMLDivElement;
+
+        modalWindowContentDiv.innerHTML = `
+        <div class="text-sm text-gray-500">
+          <ul>
+            ${data.error ? data.error.map((error) => `<li>${typeof error === "string" ? error : error.message}</li>`).join("") : ""}
+          </ul>
+        </div>
+      `;
+
+        modalWindow.classList.remove("hidden");
+      }
+    }
+
+    if (error) {
+      console.error("error block: ", error);
+    }
   });
 
   // Adds reference to add-player button
@@ -248,25 +375,28 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
   // Part of the logic that detects when a player adds a new kill item
   playerList.addEventListener("click", (event) => {
     // add-kill button
-    const clickedEvent = event.target as HTMLButtonElement;
+    const target = event.target as HTMLElement | null;
+    const clickedEvent = target?.closest("button") as HTMLButtonElement | null;
 
-    // player stats section
-    const clickedEventStats = clickedEvent.parentElement
-      ?.nextElementSibling as HTMLDivElement;
+    if (clickedEvent && clickedEvent.classList.contains("add-kill")) {
+      // player stats section
+      const clickedEventStats = clickedEvent.parentElement
+        ?.nextElementSibling as HTMLDivElement;
 
-    const clickedEventKills =
-      clickedEventStats.querySelectorAll(".player-kill-item");
+      const clickedEventKills =
+        clickedEventStats.querySelectorAll(".player-kill-item");
 
-    const clickedPlayerIndex =
-      clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
+      const clickedPlayerIndex =
+        clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
 
-    if (clickedEvent.classList.contains("add-kill")) {
+      const randomIndex = uuidv4();
+
       const newItem = document.createElement("div");
       newItem.setAttribute("class", "flex space-x-4 player-kill-item");
       newItem.innerHTML = `
       <div class="space-x-4">
         <label> Opponent: </label>
-        <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${clickedPlayerIndex}][${randomIndex}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
         ${usersByGroupOptionsParsed.map(
           (user) =>
             `<option value="${user.playerId}">
@@ -279,7 +409,7 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
 
     <div class="space-x-4 flex items-center">
       <label for="commander-damage">Commander damage:</label>
-        <select name="playerList[${clickedPlayerIndex}][${clickedEventKills.length}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
+        <select name="playerList[${clickedPlayerIndex}][${randomIndex}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
             <option value="false">
               False
             </option>
@@ -290,16 +420,28 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     </div>
 
     <div class="flex items-center cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
+      <button class="delete-kill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
+      </button>
     </div>
     `;
 
       clickedEventStats.appendChild(newItem);
     }
+
+    if (clickedEvent && clickedEvent.classList.contains("delete-kill")) {
+      clickedEvent.parentElement?.parentElement?.remove();
+    }
+
+    if (clickedEvent && clickedEvent.classList.contains("delete-player")) {
+      clickedEvent.parentElement?.parentElement?.parentElement?.remove();
+    }
   });
 
   // Part of the logic that detects when a new player is added
   addPlayerButton.addEventListener("click", () => {
+    const newPlayerIndex = uuidv4();
+
     const playerStatsDiv = document.getElementById(
       "player-list"
     ) as HTMLElement;
@@ -313,24 +455,26 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     <hr class="my-8" />
     <div
       class="player-details space-x-4 flex"
-      data-player-index="${playerItems.length}"
+      data-player-index="${newPlayerIndex}"
     >
       <div>
         <label> Player: </label>
         <select
-          name="playerList[${playerItems.length}][playerId]"
+          name="playerList[${newPlayerIndex}][playerId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
         >
-          ${usersByGroupOptionsParsed.map( (user) => `
+          ${usersByGroupOptionsParsed.map(
+            (user) => `
           <option value="${user.playerId}">${user.playerName}</option>
-          ` )}
+          `
+          )}
         </select>
       </div>
 
       <div>
         <label for="">Deck: </label>
         <select
-          name="playerList[${playerItems.length}][deckId]"
+          name="playerList[${newPlayerIndex}][deckId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
         >
           <option value="">Select a deck</option>
@@ -340,10 +484,10 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       <div>
         <label for="">Commander Tax: </label>
         <input
-          name="playerList[${playerItems.length}][commanderTax]"
+          name="playerList[${newPlayerIndex}][commanderTax]"
           name="tax"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-          placeholder="Number of turns"
+          placeholder="Tax"
         />
       </div>
 
@@ -356,7 +500,9 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
       </button>
 
       <div class="flex items-center cursor-pointer">
+      <button class="delete-player">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
+      </button>
       </div>
     </div>
     <div class="player-stats space-y-4"></div>
@@ -365,5 +511,13 @@ const { data, error } = await Astro.callAction(actions.getUsers, {});
     newRow.innerHTML = newRowBase;
 
     playerStatsDiv.appendChild(newRow);
+  });
+
+  closeModalButton.addEventListener("click", () => {
+    const modalWindow = document.getElementById(
+      "modal-window"
+    ) as HTMLDivElement;
+
+    modalWindow.classList.add("hidden");
   });
 </script>
