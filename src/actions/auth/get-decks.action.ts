@@ -6,7 +6,13 @@ export const getDecks = defineAction({
   accept: "json",
   handler: async (input, { cookies }) => {
     try {
-      const groupId = "234234234234";
+
+      const firstGroup = await db.select({
+        id: Group.id,
+      }).from(Group).limit(1).execute();
+
+      const groupId = firstGroup[0].id;
+      
       const decks = await db
         .select({
           deckId: Deck.id,
