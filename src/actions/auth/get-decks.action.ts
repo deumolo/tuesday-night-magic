@@ -6,13 +6,20 @@ export const getDecks = defineAction({
   accept: "json",
   handler: async (input, { cookies }) => {
     try {
-      const groupId = "234234234234";
+      const firstGroup = await db.select({
+        id: Group.id,
+      }).from(Group).limit(1).execute();
+
+      const groupId = firstGroup[0].id;
+
+      console.log("groupId: ", groupId);
+
       const decks = await db
         .select({
           deckId: Deck.id,
           name: User.name,
           deckName: Deck.name,
-          private: Deck.private,
+          private: Deck.privateDeck,
           moxfieldLink: Deck.moxfieldLink,
           createdAt: Deck.createdAt,
           userId: Deck.userId,
