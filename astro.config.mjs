@@ -11,8 +11,11 @@ import auth from 'auth-astro';
 
 import icon from 'astro-icon';
 
+import vercel from '@astrojs/vercel';
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [db(), tailwind(), auth(), icon()],
-  adapter: netlify()
+  adapter: vercel(),
+  output: 'server',
 });
