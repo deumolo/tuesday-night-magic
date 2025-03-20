@@ -21,12 +21,6 @@ export default async function () {
 
   await db.insert(User).values([
     {
-      id: user1id,
-      name: "Daniel Moreno",
-      email: "dmoreno@gmail.com",
-      password: "1234",
-    },
-    {
       id: user2id,
       name: "Ricardo Luna",
       email: "rluna@gmail.com",
@@ -49,29 +43,14 @@ export default async function () {
   await db.insert(Deck).values([
     {
       id: UUID(),
-      name: "Spirit Squadron",
-      privateDeck: false,
-      moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
-      userId: user1id,
-    },
-    {
-      id: UUID(),
-      name: "Dogmeat",
-      privateDeck: false,
-      moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
-      userId: user1id,
-    },
-    {
-      id: UUID(),
       name: "Jinnie Faye",
-      privateDeck: false,
+      // privateDeck: false,
       moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
       userId: user2id,
     },
   ]);
 
   await db.insert(UserGroup).values([
-    { id: UUID(), userId: user1id, groupId: group1id },
     { id: UUID(), userId: user2id, groupId: group1id },
     { id: UUID(), userId: user3id, groupId: group1id },
     { id: UUID(), userId: user4id, groupId: group1id },
