@@ -1,0 +1,38 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+const { deckId } = Astro.params;
+
+import { actions } from "astro:actions";
+
+const { data: deckDetailsData, error: deckDetailsError } =
+  await Astro.callAction(actions.getDeckDetails, {
+    deckId,
+  });
+---
+
+<Layout>
+  <h1 class="text-2xl">
+    {deckDetailsData?.deck.name}
+  </h1>
+
+  <div>{deckDetailsData?.deck?.moxfieldLink}</div>
+
+  <div>
+    {deckDetailsData?.deck?.userId}
+  </div>
+
+  <div>{deckDetailsData?.deck?.createdAt}</div>
+
+  <div>
+    <a href={`/decks/edit/${deckId}`}>
+      <button
+        id="btn-submit"
+        class="bg-black text-white rounded-lg px-5 py-2.5"
+      >
+        Edit
+      </button>
+  </a>
+  </div>
+
+</Layout>

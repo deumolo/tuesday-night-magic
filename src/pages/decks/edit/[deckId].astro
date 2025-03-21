@@ -1,14 +1,26 @@
 ---
 const prerender = false;
-import Layout from "../layouts/Layout.astro";
-import ModalWindow from "../components/ModalWindow.astro";
-
+import Layout from "../../../layouts/Layout.astro";
+import ModalWindow from "../../../components/ModalWindow.astro";
 import { getSession } from "auth-astro/server";
+
+const { deckId } = Astro.params;
+
 const session = await getSession(Astro.request);
 if (!session) {
   return Astro.redirect("/login");
 }
 const { user } = session;
+
+import { actions } from "astro:actions";
+
+const { data: deckDetailsData, error: deckDetailsError } =
+  await Astro.callAction(actions.getDeckDetails, {
+    deckId,
+  });
+
+const deck = deckDetailsData?.deck;
+
 ---
 
 <Layout>
@@ -24,7 +36,7 @@ const { user } = session;
             type="text"
             name="name"
             placeholder="Deck name"
-            value=""
+            value={deck?.name}
           />
         </div>
         <div>
@@ -33,20 +45,25 @@ const { user } = session;
             type="text"
             name="moxfieldLink"
             placeholder="Moxfield link"
-            value=""
+            value={deck?.moxfieldLink}
           />
         </div>
 
         <div>
           <input type="hidden" name="userId" value={user?.id} />
         </div>
+        
+        <div>
+          <input type="hidden" name="deckId" value={deckId} />
+        </div>
+
         <div>
           <button
             type="submit"
             id="btn-submit"
             class="bg-black text-white rounded-lg px-5 py-2.5"
           >
-            Create
+            Save
           </button>
         </div>
       </form>
@@ -77,7 +94,7 @@ const { user } = session;
     e.preventDefault();
 
     const formData = new FormData(form);
-    const { data, error } = await actions.createDeck(formData);
+    const { data, error } = await actions.editDeck(formData);
 
     if (data) {
       if (data.success) {
