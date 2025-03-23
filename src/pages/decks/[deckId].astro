@@ -1,5 +1,6 @@
 ---
 export const prerender = false;
+import ModalWindow from "../../components/ModalWindow.astro";
 import Layout from "../../layouts/Layout.astro";
 const { deckId } = Astro.params;
 
@@ -32,7 +33,77 @@ const { data: deckDetailsData, error: deckDetailsError } =
       >
         Edit
       </button>
-  </a>
+    </a>
+    <button
+      id="btn-delete"
+      class="bg-red-900 text-white rounded-lg px-5 py-2.5"
+    >
+      Delete
+    </button>
   </div>
 
+  <div>
+    <input id="deck-id-input" type="hidden" value={deckId} />
+  </div>
+
+  <ModalWindow>
+    <div>
+      <div class="text-2xl">Confirm delete deck?</div>
+
+      <div>
+        <button
+          id="close-modal"
+          class="bg-red-900 text-white rounded-lg px-5 py-2.5"
+        >
+          Close
+        </button>
+        <button
+          id="confirm-delete"
+          class="bg-green-900 text-white rounded-lg px-5 py-2.5"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </ModalWindow>
 </Layout>
+
+<script>
+  import { actions } from "astro:actions";
+
+  const deleteDialogButton = document.getElementById(
+    "btn-delete"
+  ) as HTMLButtonElement;
+
+  const modalWindow = document.getElementById("modal-window") as HTMLDivElement;
+
+  const closeModalButton = document.getElementById(
+    "close-modal"
+  ) as HTMLButtonElement;
+
+  const confirmDeletButton = document.getElementById(
+    "confirm-delete"
+  ) as HTMLButtonElement;
+
+  const deckIdInput = document.getElementById(
+    "deck-id-input"
+  ) as HTMLInputElement;
+  const deckId = deckIdInput.value;
+
+  deleteDialogButton.addEventListener("click", () => {
+    modalWindow.classList.remove("hidden");
+  });
+
+  closeModalButton.addEventListener("click", () => {
+    modalWindow.classList.add("hidden");
+  });
+
+  confirmDeletButton.addEventListener("click", async () => {
+    const { data, error } = await actions.deleteDeck({
+      deckId,
+    });
+
+    console.log(data);
+
+  });
+</script>

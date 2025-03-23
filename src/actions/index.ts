@@ -10,6 +10,7 @@ import {
   getMatchesUser,
   getDeckDetails,
   editDeck,
+  deleteDeck,
 } from "./auth";
 
 export const server = {
@@ -23,5 +24,6 @@ export const server = {
   getDecksUser,
   getMatchesUser,
   getDeckDetails,
-  editDeck
+  editDeck,
+  deleteDeck,
 };

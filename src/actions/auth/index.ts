@@ -9,3 +9,4 @@ export * from "./get-decks-user.action";
 export * from "./get-matches-user.action";
 export * from "./get-deck-details.action";
 export * from "./edit-deck.action";
+export * from "./delete-deck.action";
