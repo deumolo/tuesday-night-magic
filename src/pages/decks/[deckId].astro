@@ -103,7 +103,13 @@ const { data: deckDetailsData, error: deckDetailsError } =
       deckId,
     });
 
-    console.log(data);
+    if (data?.success) {
+      window.location.href = "/decks";
+    }
+
+    if (error) {
+      console.error(error);
+    }
 
   });
 </script>
