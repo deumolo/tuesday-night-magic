@@ -22,10 +22,7 @@ const { data: decksData, error: decksError } = await Astro.callAction(
 
   <div class="flex justify-end">
     <a href="/new-deck">
-      <button
-        type="button"
-        class="bg-black text-white rounded-lg px-5 py-2.5"
-      >
+      <button type="button" class="bg-black text-white rounded-lg px-5 py-2.5">
         Create new deck
       </button>
     </a>
@@ -44,28 +41,21 @@ const { data: decksData, error: decksError } = await Astro.callAction(
       {
         decksData?.decks?.map((deck) => (
           <tr>
-            <th>
-              {deck.deckName}
-            </th>
+            <th>{deck.deckName}</th>
 
             <td>
               <a href={deck.moxfieldLink} target="_blank">
-                <button>
-                  Open
-                </button>
+                <button>Open</button>
               </a>
             </td>
 
             <td>
-              <a href=`/decks/${deck.deckId}`>
-                <button>
-                  Open
-                </button>
+              <a href={`/decks/${deck.deckId}`}>
+                <button>Open</button>
               </a>
             </td>
 
             <td> {deck.createdAt.toLocaleDateString("en-GB")} </td>
-
           </tr>
         ))
       }
