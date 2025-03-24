@@ -40,6 +40,11 @@ const { user } = session;
         <div>
           <input type="hidden" name="userId" value={user?.id} />
         </div>
+
+        <div>
+          <input type="hidden" name="administrator" value="true" />
+        </div>
+
         <div>
           <button
             type="submit"

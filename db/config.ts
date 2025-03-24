@@ -45,7 +45,7 @@ const UserGroup = defineTable({
     id: column.text({ primaryKey: true, unique: true }),
     userId: column.text({ references: () => User.columns.id }),
     groupId: column.text({ references: () => Group.columns.id }),
-    role: column.text({ optional: true }),
+    administrator: column.text({ optional: true }),
     createdAt: column.date({ default: new Date() }),
   },
 });
