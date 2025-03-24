@@ -1,0 +1,110 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ModalWindow from "../components/ModalWindow.astro";
+import { actions } from "astro:actions";
+const { data: usersData, error } = await Astro.callAction(actions.getUsers, {});
+console.log(usersData, error);
+---
+
+<Layout>
+  <div class="flex justify-center self-center z-10">
+    <div class="p-12 mx-auto rounded-2xl w-100">
+      <div class="mb-4">
+        <h3 class="font-semibold text-2xl">List of players</h3>
+      </div>
+      
+      <div class="space-y-5">
+        <div class="flex justify-between">
+          <div class="w-1/2">
+            <label class="text-sm font-medium tracking-wide">Name</label>
+          </div>
+          <div class="w-1/2">
+            <label class="text-sm font-medium tracking-wide">Email</label>
+          </div>
+        </div>
+        <div class="space-y-2">
+          {
+            usersData?.users.map((user) => (
+              <div class="flex justify-between">
+                <div class="w-1/2">
+                  <a href={`/users/${user.id}`}><span>{user.name}</span></a>
+                </div>
+                <div class="w-1/2">
+                  <span>{user.email}</span>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+    </div>
+  </div>
+
+  <ModalWindow title="Deck" />
+</Layout>
+
+<script>
+  import { actions } from "astro:actions";
+
+  const closeModalButton = document.getElementById(
+    "close-modal"
+  ) as HTMLButtonElement;
+
+  closeModalButton.addEventListener("click", () => {
+    const modalWindow = document.getElementById(
+      "modal-window"
+    ) as HTMLDivElement;
+
+    modalWindow.classList.add("hidden");
+  });
+
+  const form = document.querySelector("form") as HTMLFormElement;
+  const btnSubmit = document.querySelector("#btn-submit") as HTMLButtonElement;
+  const errorAlert = document.querySelector("#error-alert") as HTMLDivElement;
+
+  const closeErrorAlert = document.querySelector(
+    "#close-error-alert"
+  ) as HTMLButtonElement;
+
+  closeErrorAlert.addEventListener("click", () => {
+    errorAlert.classList.add("invisible");
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    btnSubmit.setAttribute("disabled", "disabled");
+    const formData = new FormData(form);
+    const { data, error } = await actions.createDeck(formData);
+
+    if (data) {
+      if (data.success) {
+        window.location.href = "/decks";
+        btnSubmit.removeAttribute("disabled");
+      } else {
+        const modalWindow = document.getElementById(
+          "modal-window"
+        ) as HTMLDivElement;
+
+        const modalWindowContentDiv = modalWindow.querySelector(
+          ".modal-window-content"
+        ) as HTMLDivElement;
+
+        modalWindowContentDiv.innerHTML = `
+        <div class="text-sm text-gray-500">
+          <ul>
+            ${data.error ? data.error.map((error) => `<li>${typeof error === "string" ? error : error.message}</li>`).join("") : ""}
+          </ul>
+        </div>
+      `;
+
+        modalWindow.classList.remove("hidden");
+      }
+    }
+
+    if (error) {
+      console.error("error block: ", error);
+    }
+
+    btnSubmit.removeAttribute("disabled");
+  });
+</script>

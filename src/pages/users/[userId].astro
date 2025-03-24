@@ -1,0 +1,93 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+const { userId } = Astro.params;
+import { actions } from "astro:actions";
+
+const { data: decksData, error: decksError } = await Astro.callAction(
+  actions.getDecksUser,
+  {
+    userId,
+  }
+);
+
+const { data: matchesData, error: matchesError } = await Astro.callAction(
+  actions.getMatchesUser,
+  {
+    userId,
+  }
+);
+
+---
+
+<Layout>
+  <div class="flex justify-center self-center z-10">
+    <div class="flex flex-col items-center">
+
+      <div class="mt-12">
+        <h2>Decks</h2>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {
+            decksData?.decks?.map((deck) => (
+              <a href={deck.moxfieldLink} target="_blank">
+                <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+                  <h2 class="text-xl font-bold">{deck.deckName}</h2>
+                  <p class="text-sm">{deck.createdAt}</p>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="mt-12 w-full">
+        <h2>Last Matches</h2>
+        <div>
+          <div class="relative overflow-x-auto">
+            <table
+              class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+            >
+              <thead
+                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+              >
+                <tr>
+                  <th scope="col" class="px-6 py-3"> Match </th>
+                  <th scope="col" class="px-6 py-3"> Turns </th>
+                  <th scope="col" class="px-6 py-3"> Players </th>
+                  <th scope="col" class="px-6 py-3"> Date </th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  matchesData?.matches?.map((match) => (
+                  <tr
+                  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                >
+                  <th
+                    scope="row"
+                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    {match.matchId}
+                  </th>
+                  <td class="px-6 py-4"> {match.turns} </td>
+                  <td class="px-6 py-4">
+                    {
+                      match.participants.map((participant) => (
+                        <div>
+                          <span>{participant.name}</span>
+                        </div>
+                      ))
+                    }
+                  </td>
+                  <td class="px-6 py-4"> {match.createdAt} </td>
+                </tr>                    
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></Layout
+>
