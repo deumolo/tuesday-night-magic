@@ -1,6 +1,7 @@
 
 export * from "./get-users.action";
 export * from "./get-decks.action";
+export * from "./get-match-info.action";
 
 export * from "./get-deck-details.action";
 
