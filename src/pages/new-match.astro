@@ -1,10 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ModalWindow from "../components/ModalWindow.astro";
-
 import { actions } from "astro:actions";
-
 import { v4 as uuidv4 } from "uuid";
+import { getSession } from "auth-astro/server";
+
+const session = await getSession(Astro.request);
+if (!session) {
+  return Astro.redirect("/login");
+}
+
+const { user } = session;
 
 const { data: decksData, error: decksError } = await Astro.callAction(
   actions.getDecks,
@@ -12,6 +18,14 @@ const { data: decksData, error: decksError } = await Astro.callAction(
 );
 
 const { data, error } = await Astro.callAction(actions.getUsers, {});
+
+const { data: groupsData, error: groupsError } = await Astro.callAction(
+  actions.getGroupsUser,
+  {
+    userId: user?.id,
+  }
+);
+
 const basePlayerIndex = uuidv4();
 ---
 
@@ -39,16 +53,18 @@ const basePlayerIndex = uuidv4();
       </select>
     </div>
 
-    <!-- d664ebc8-7c76-42e8-bb70-0a37bbe74387 -->
     <div class="">
       <label class="">Group:</label>
-      <input
-        value="56e98371-fff7-472b-ae77-4ecf7fd3a4f9"
-        type="text"
+      <select
         name="groupId"
         class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-        placeholder="Group id"
-      />
+      >
+        <option value="">Select a group</option>
+        {
+          groupsData?.groups?.map((group) => (
+            <option value={group.groupId}>{group.groupName}</option>
+          ))
+        }
     </div>
 
     <div class="flex justify-between">
@@ -165,6 +181,55 @@ const basePlayerIndex = uuidv4();
 
   // Adds listener to form submit event
   const form = document.querySelector("form") as HTMLFormElement;
+  
+  // Adds reference to add-player button
+  const addPlayerButton = document.getElementById(
+    "add-player"
+  ) as HTMLButtonElement;
+
+  // Part of the logic to get an array with all the decks in the group
+  const decksByGroup = document.getElementById(
+    "deck-by-group"
+  ) as HTMLSelectElement;
+  
+  const decksByGroupOptions = decksByGroup.options;
+  
+  const decksByGroupOptionsParsed = Array.from(decksByGroupOptions).map(
+    (option) => {
+      return {
+        deckId: option.dataset.deckId,
+        deckName: option.dataset.deckName,
+        userId: option.dataset.userId,
+      };
+    }
+  );
+
+  // Part of the logic to get an array with all the users in the group to populate dynamically added players
+  const usersByGroup = document.querySelector(
+    ".player-select"
+  ) as HTMLSelectElement;
+  
+  const usersByGroupOptions = usersByGroup.options;
+  
+  const usersByGroupOptionsParsed = Array.from(usersByGroupOptions).map(
+    (option) => {
+      if (option.value === "") {
+        return {
+          playerId: "",
+          playerName: "Select a player",
+        };
+      } else {
+        return {
+          playerId: option.dataset.playerId,
+          playerName: option.dataset.playerName,
+        };
+      }
+    }
+  );
+
+  // Adds reference to the player list
+  const playerList = document.getElementById("player-list") as HTMLDivElement;
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -201,50 +266,6 @@ const basePlayerIndex = uuidv4();
       console.error("error block: ", error);
     }
   });
-
-  // Adds reference to add-player button
-  const addPlayerButton = document.getElementById(
-    "add-player"
-  ) as HTMLButtonElement;
-
-  // Part of the logic to get an array with all the decks in the group
-  const decksByGroup = document.getElementById(
-    "deck-by-group"
-  ) as HTMLSelectElement;
-  const decksByGroupOptions = decksByGroup.options;
-  const decksByGroupOptionsParsed = Array.from(decksByGroupOptions).map(
-    (option) => {
-      return {
-        deckId: option.dataset.deckId,
-        deckName: option.dataset.deckName,
-        userId: option.dataset.userId,
-      };
-    }
-  );
-
-  // Part of the logic to get an array with all the users in the group to populate dynamically added players
-  const usersByGroup = document.querySelector(
-    ".player-select"
-  ) as HTMLSelectElement;
-  const usersByGroupOptions = usersByGroup.options;
-  const usersByGroupOptionsParsed = Array.from(usersByGroupOptions).map(
-    (option) => {
-      if (option.value === "") {
-        return {
-          playerId: "",
-          playerName: "Select a player",
-        };
-      } else {
-        return {
-          playerId: option.dataset.playerId,
-          playerName: option.dataset.playerName,
-        };
-      }
-    }
-  );
-
-  // Adds reference to the player list
-  const playerList = document.getElementById("player-list") as HTMLDivElement;
 
   // Part of the logic that detects when a player select dropdown is changed and populates that player's decks dynamically
   playerList.addEventListener("change", (event) => {
