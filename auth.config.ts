@@ -32,8 +32,6 @@ export default defineConfig({
     async signIn({ user }) {
       // Add user info to Astro DB when they log in
       try {
-        console.log("User:", user);
-
         const newUser = {
           id: UUID(),
           name: user.name ?? "Anonymous User",
@@ -54,8 +52,6 @@ export default defineConfig({
     },
 
     async jwt({ token, user }) {
-      console.log("JWT callback:", token, user);
-
       // If user just signed in, attach database ID to the token
       if (user) {
         const [dbUser] = await db
@@ -73,8 +69,6 @@ export default defineConfig({
     },
 
     async session({ session, token }) {
-      console.log("Session callback:", session, token);
-
       // Attach the database user ID from the JWT to the session
       if (token.id && session.user) {
         session.user.id = token.id as string;

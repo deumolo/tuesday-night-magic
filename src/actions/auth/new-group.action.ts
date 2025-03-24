@@ -2,41 +2,61 @@ import { LibsqlError } from "@libsql/client";
 import { ActionInputError } from "astro:actions";
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
-import { db, Group, User } from "astro:db";
+import { db, Group, UserGroup } from "astro:db";
 import bcrypt from "bcryptjs";
 import { v4 as UUID } from "uuid";
 
+const deckSchema = z.object({
+  name: z.string().nonempty("Group name is required"),
+  password: z.string().nonempty("Group password required"),
+  administrator: z.string().nonempty("Administrator id is required"),
+  userId: z.string().nonempty("User id is required"),
+});
+
 export const createGroup = defineAction({
   accept: "form",
-  input: z.discriminatedUnion("privateGroup", [
-    z.object({
-      // Matches when the `private` field has the value `false`
-      privateGroup: z.literal("false"),
-      name: z.string(),
-    }),
-    z.object({
-      // Matches when the `private` field has the value `true`
-      privateGroup: z.literal("true"),
-      name: z.string(),
-      password: z.string().min(4),
-    }),
-  ]),
-
-  handler: async (input, { cookies }) => {
+  handler: async (input, { request, cookies }) => {
     try {
+
+
+      const formData = await request.formData();
+      const userId = formData.get("userId") as string;
+      const newGroupId = UUID();
+      const administrator = formData.get("administrator") as string;
+
       const newGroup = {
-        id: UUID(),
-        name: input.name,
-        private: input.privateGroup === "true",
-        password: input.privateGroup === "true" ? input.password : null,
+        id: newGroupId,
+        name: formData.get("name") as string,
+        password: formData.get("password") as string,
+        userId: userId,
+        administrator: administrator,
       };
 
-      await db.insert(Group).values(newGroup);
-    } catch (error) {
-      return {
-        success: false,
-        error: "Email already exists. Please use a different email address.",
+      const newUserGroup = {
+        id: UUID(),
+        userId: userId,
+        groupId: newGroupId,
+        administrator: administrator === "true" ? "true" : "false",
       };
+
+      deckSchema.parse(newGroup);
+
+      const queries = [db.insert(Group).values(newGroup), db.insert(UserGroup).values(newUserGroup)] as const;
+      await db.batch(queries);
+
+      return {
+        success: true,
+        data: newGroup,
+      };
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.log(err);
+        return { success: false, error: err.errors };
+      }
+
+      console.log(err);
+
+      return { success: false, error: ["Unknown error occurred"] };
     }
   },
 });

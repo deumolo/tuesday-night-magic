@@ -1,21 +1,34 @@
 ---
 const prerender = false;
-import Layout from "../layouts/Layout.astro";
-import ModalWindow from "../components/ModalWindow.astro";
+import Layout from "../../../layouts/Layout.astro";
+import ModalWindow from "../../../components/ModalWindow.astro";
 
 import { getSession } from "auth-astro/server";
 const session = await getSession(Astro.request);
 if (!session) {
   return Astro.redirect("/login");
 }
+
 const { user } = session;
+
+const { deckId } = Astro.params;
+
+import { actions } from "astro:actions";
+
+const { data: deckDetailsData, error: deckDetailsError } =
+  await Astro.callAction(actions.getDeckDetails, {
+    deckId,
+  });
+
+const deck = deckDetailsData?.deck;
+
 ---
 
 <Layout>
   <div class="z-10">
     <div>
       <div>
-        <h3 class="text-2xl">New group</h3>
+        <h3 class="text-2xl">New deck</h3>
       </div>
       <form>
         <div>
@@ -23,35 +36,34 @@ const { user } = session;
             class="w-full py-2 border"
             type="text"
             name="name"
-            placeholder="Group name"
-            value=""
+            placeholder="Deck name"
+            value={deck?.name}
           />
         </div>
         <div>
           <input
             class="w-full py-2 border"
             type="text"
-            name="password"
-            placeholder="Group password"
-            value=""
+            name="moxfieldLink"
+            placeholder="Moxfield link"
+            value={deck?.moxfieldLink}
           />
         </div>
 
         <div>
           <input type="hidden" name="userId" value={user?.id} />
         </div>
-
+        
         <div>
-          <input type="hidden" name="administrator" value="true" />
+          <input type="hidden" name="deckId" value={deckId} />
         </div>
-
         <div>
           <button
             type="submit"
             id="btn-submit"
             class="bg-black text-white rounded-lg px-5 py-2.5"
           >
-            Create
+            Save
           </button>
         </div>
       </form>
@@ -60,7 +72,7 @@ const { user } = session;
 
   <ModalWindow>
     <div>
-      <h3 id="modal-title" class="text-2xl">New group not created</h3>
+      <h3 id="modal-title" class="text-2xl">New deck not created</h3>
       <div class="modal-window-content"></div>
     </div>
     <div>
@@ -94,11 +106,11 @@ const { user } = session;
     e.preventDefault();
 
     const formData = new FormData(form);
-    const { data, error } = await actions.createGroup(formData);
+    const { data, error } = await actions.editDeck(formData);
 
     if (data) {
       if (data.success) {
-        window.location.href = "/groups";
+        window.location.href = "/decks";
       } else {
         const modalWindow = document.getElementById(
           "modal-window"
