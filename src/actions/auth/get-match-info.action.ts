@@ -8,10 +8,6 @@ export const getMatchInfo = defineAction({
   handler: async (input, { cookies }) => {
     try {
 
-      // await createSampleData();
-      // await addUserToMyGroup("0bc17adb-8adc-4f20-b340-46ff967fc7ee");
-      // addMeToGroup("6951a942-2f6b-4dcf-a4ad-6bd63828fc77", "94f503b1-66d6-4f40-a216-8feec3711829");
-      
       // Step 1: Get all groups the user is in
       const userGroups = await db
         .select()
@@ -77,71 +73,3 @@ export const getMatchInfo = defineAction({
     }
   },
 }); 
-
-const createSampleData = async () => {
-  const newUserId = UUID();
-  const newGroupId = UUID();
-  
-  await createUser(newUserId, "User1", "user1@gmail.com","123");
-  await createGroup(newGroupId, "Group1", newUserId);
-  await createUserGroup(newUserId, newGroupId);
-  await createDeck("DeckName1", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId);  
-  await createDeck("DeckName2", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId);  
-  await createDeck("DeckName3", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId); 
-  
-  const newUserId2 = UUID();
-  await createUser(newUserId2, "User2", "user2@gmail.com","123");
-  await createUserGroup(newUserId2, newGroupId);
-  await createDeck("DeckName2-1", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId2);  
-  await createDeck("DeckName2-2", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId2);  
-  await createDeck("DeckName2-3", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId2); 
-
-
-}
-
-const addUserToMyGroup = async (groupId : string) => {
-  const newUserId = UUID();
-  await createUser(newUserId, "User4", "user4wdd@gmail.com","123");
-  await createDeck("DeckName-user4", "https://moxfield.com/decks/7gBoTtuLHUy2yM1VUs-2Vw", newUserId);
-  await createUserGroup(newUserId, groupId);
-}
-
-const addMeToGroup = async (groupId : string, userId : string) => {
-  await createUserGroup(userId, groupId);
-}
-
-const createUser = async (id : string, name: any, email: any, password: any) => {
-  await db.insert(User).values({
-    id,
-    name,
-    email,
-    password
-  });    
-}
-
-const createGroup = async (id : string, name: any, password: any) => {
-  await db.insert(Group).values({
-    id,
-    name,
-    password
-  });    
-}
-
-
-const createDeck = async (name: string, moxfieldLink: string, userId: string) => {
-  await db.insert(Deck).values({
-    id: UUID(),
-    name,
-    moxfieldLink,
-    userId,
-  });      
-}
-
-const createUserGroup = async (userId : string, groupId : string) => {
-  await db.insert(UserGroup).values({
-    id: UUID(),
-    userId,
-    groupId,
-    administrator: "false",
-  });    
-}
