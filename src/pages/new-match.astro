@@ -12,15 +12,8 @@ if (!session) {
 
 const { user } = session;
 
-const { data: decksData, error: decksError } = await Astro.callAction(
-  actions.getDecks,
-  {}
-);
-
-const { data, error } = await Astro.callAction(actions.getUsers, {});
-
-const { data: groupsData, error: groupsError } = await Astro.callAction(
-  actions.getGroupsUser,
+const { data: getGroupsUser, error: groupsError } = await Astro.callAction(
+  actions.getMatchInfo,
   {
     userId: user?.id,
   }
@@ -31,40 +24,28 @@ const basePlayerIndex = uuidv4();
 
 <Layout>
   <form class="space-y-5 w-3/4 mx-auto">
-    <div class="hidden">
-      <label class="">Group decks:</label>
-      <select
-        name=""
-        id="deck-by-group"
-        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-      >
-        {
-          decksData?.decks?.map((deck) => (
-            <option
-              data-deck-id={deck.deckId}
-              data-deck-name={deck.deckName}
-              data-user-id={deck.userId}
-              value={deck.deckName}
-            >
-              {deck.deckName}
-            </option>
-          ))
-        }
-      </select>
+    <div>
+      <input type="hidden" id="user-id-input" name="userId" value={user?.id} />
     </div>
 
-    <div class="">
-      <label class="">Group:</label>
+    <div>
+      <label class="">Group: </label>
       <select
         name="groupId"
+        id="group-list"
         class="text-base px-4 py-2 border rounded-lg focus:outline-none"
       >
         <option value="">Select a group</option>
         {
-          groupsData?.groups?.map((group) => (
-            <option value={group.groupId}>{group.groupName}</option>
-          ))
+          getGroupsUser &&
+            "success" in getGroupsUser &&
+            getGroupsUser.groups?.map((group) => (
+              <option value={group.id} data-group-id={group.id}>
+                {group.name}
+              </option>
+            ))
         }
+      </select>
     </div>
 
     <div class="flex justify-between">
@@ -96,21 +77,11 @@ const basePlayerIndex = uuidv4();
     <div class="space-x-4">
       <label for="">Winner: </label>
       <select
-        class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
+        id="winner-select"
+        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
         name="winnerId"
       >
         <option value="">Select a winner</option>
-        {
-          data?.users?.map((user) => (
-            <option
-              data-player-name={user.name}
-              data-player-id={user.id}
-              value={user.id}
-            >
-              {user.name}
-            </option>
-          ))
-        }
       </select>
     </div>
 
@@ -128,11 +99,6 @@ const basePlayerIndex = uuidv4();
               name=`playerList[${basePlayerIndex}][playerId]`
             >
               <option value="">Select a player</option>
-              {
-                data?.users?.map((user) => (
-                  <option value={user.id}>{user.name}</option>
-                ))
-              }
             </select>
           </div>
 
@@ -168,64 +134,134 @@ const basePlayerIndex = uuidv4();
     </div>
   </form>
 
-  <ModalWindow title="Match"/>
+  <ModalWindow>
+    <div>
+      <h3 id="modal-title" class="text-2xl">New match not created</h3>
+      <div class="modal-window-content"></div>
+    </div>
+    <div>
+      <button
+        id="close-modal"
+        type="button"
+        class="bg-black text-white rounded-lg px-5 py-2.5">Close</button
+      >
+    </div>
+  </ModalWindow>
 </Layout>
 
 <script>
   import { actions } from "astro:actions";
   import { v4 as uuidv4 } from "uuid";
 
+  interface Deck {
+    id: string;
+    name: string;
+    userId: string;
+  }
+
+  interface MatchInfo {
+    success: boolean;
+    decks?: Deck[];
+    groups?: {
+      id: string;
+      name: string;
+      users?: { id: string; name: string; decks?: Deck[] }[];
+    }[];
+  }
+
+  interface User {
+    id: string;
+    name: string;
+    decks?: Deck[];
+  }
+
+  // Adds reference to close modal button
   const closeModalButton = document.getElementById(
     "close-modal"
   ) as HTMLButtonElement;
 
-  // Adds listener to form submit event
+  // Adds reference to form submit event
   const form = document.querySelector("form") as HTMLFormElement;
-  
+
   // Adds reference to add-player button
   const addPlayerButton = document.getElementById(
     "add-player"
   ) as HTMLButtonElement;
 
-  // Part of the logic to get an array with all the decks in the group
-  const decksByGroup = document.getElementById(
-    "deck-by-group"
-  ) as HTMLSelectElement;
-  
-  const decksByGroupOptions = decksByGroup.options;
-  
-  const decksByGroupOptionsParsed = Array.from(decksByGroupOptions).map(
-    (option) => {
-      return {
-        deckId: option.dataset.deckId,
-        deckName: option.dataset.deckName,
-        userId: option.dataset.userId,
-      };
-    }
-  );
+  // Adds reference to the group list
+  const groupList = document.getElementById("group-list") as HTMLSelectElement;
 
-  // Part of the logic to get an array with all the users in the group to populate dynamically added players
-  const usersByGroup = document.querySelector(
-    ".player-select"
+  const winnerSelect = document.getElementById(
+    "winner-select"
   ) as HTMLSelectElement;
+
+  const userIdInput = document.getElementById(
+    "user-id-input"
+  ) as HTMLInputElement;
   
-  const usersByGroupOptions = usersByGroup.options;
+  const userId = userIdInput.value;
   
-  const usersByGroupOptionsParsed = Array.from(usersByGroupOptions).map(
-    (option) => {
-      if (option.value === "") {
-        return {
-          playerId: "",
-          playerName: "Select a player",
-        };
+  let getMatchInfoBase: MatchInfo | null = null;
+  
+  let selectedGroup: string | null = null;
+  
+  let selectedUserDecks = [];
+
+  let usersByGroupGlobal: User[] = [];
+
+  // Part of the logic that fills the player-select elements with the users in a group
+  groupList.addEventListener("change", async (event) => {
+    const selectedValue = groupList.value;
+    selectedGroup = selectedValue;
+
+    const { data: getMatchInfoData, error: getMatchInfoError } =
+      await actions.getMatchInfo({
+        userId,
+      });
+
+    if (getMatchInfoData && "success" in getMatchInfoData) {
+      getMatchInfoBase = getMatchInfoData as MatchInfo;
+    }
+
+    const { data, error } = await actions.getUsersGroup({
+      groupId: selectedValue,
+    });
+
+    usersByGroupGlobal = data?.users ?? [];
+
+    if (data) {
+      if (data.success) {
+        winnerSelect.innerHTML = `
+          <option value="">Select a winner</option>
+          ${usersByGroupGlobal.map(
+            (user) => `<option value="${user.id}">${user.name}</option>`
+          )}
+        `;
+
+        const allPlayerSelects = document.querySelectorAll(
+          ".player-select"
+        ) as NodeListOf<HTMLSelectElement>;
+
+        allPlayerSelects.forEach((select) => {
+          select.innerHTML = `
+            <option value="">Select a player</option>
+            ${usersByGroupGlobal.map(
+              (user) =>
+                `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">
+                  ${user.name}
+                </option>`
+            )}
+          `;
+        });
       } else {
-        return {
-          playerId: option.dataset.playerId,
-          playerName: option.dataset.playerName,
-        };
+        console.log(data.message);
       }
     }
-  );
+
+    if (error) {
+      console.error("error block: ", error);
+    }
+  });
 
   // Adds reference to the player list
   const playerList = document.getElementById("player-list") as HTMLDivElement;
@@ -239,6 +275,9 @@ const basePlayerIndex = uuidv4();
     if (data) {
       if (data.success) {
         console.log("success block: ", data);
+
+        window.location.href = `/matches`;
+
       } else {
         console.log(data.error);
 
@@ -265,16 +304,18 @@ const basePlayerIndex = uuidv4();
     if (error) {
       console.error("error block: ", error);
     }
+
   });
 
   // Part of the logic that detects when a player select dropdown is changed and populates that player's decks dynamically
   playerList.addEventListener("change", (event) => {
     const changedEvent = event.target as HTMLSelectElement;
+
     if (
       changedEvent.tagName === "SELECT" &&
       changedEvent.classList.contains("player-select")
     ) {
-      const selectedValue = changedEvent.value;
+      const selectedPlayerValue = changedEvent.value;
 
       //This is the shared space for the two select menus
       const changedEventParent = changedEvent.parentElement
@@ -284,28 +325,25 @@ const basePlayerIndex = uuidv4();
         ".player-decks"
       ) as HTMLSelectElement;
 
-      const decksBySelectedUserData = decksByGroupOptionsParsed.filter(
-        (deck) => deck.userId === selectedValue
-      );
-
-      decksBySelectedUserData.unshift({
-        deckId: "",
-        userId: "",
-        deckName: "Select a deck",
-      });
+      selectedUserDecks =
+        getMatchInfoBase?.groups
+          ?.find((group) => group.id === selectedGroup)
+          ?.users?.find((user) => user.id === selectedPlayerValue)?.decks ?? [];
 
       decksBySelectedUser.innerHTML = `
-        ${decksBySelectedUserData.map(
-          (deck) =>
-            `<option value="${deck.deckId}">
-              ${deck.deckName}
-            </option>`
-        )}
+        <option value="">Select a deck</option>
+        ${selectedUserDecks
+          .map(
+            (deck) => `
+          <option value="${deck.id}">${deck.name}</option>
+        `
+          )
+          .join("")}
       `;
     }
   });
 
-  // Part of the logic that detects when a player adds a new kill item
+  // Part of the logic that adds a new kill item
   playerList.addEventListener("click", (event) => {
     // add-kill button
     const target = event.target as HTMLElement | null;
@@ -330,12 +368,13 @@ const basePlayerIndex = uuidv4();
       <div class="space-x-4">
         <label> Opponent: </label>
         <select name="playerList[${clickedPlayerIndex}][${randomIndex}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
-        ${usersByGroupOptionsParsed.map(
-          (user) =>
-            `<option value="${user.playerId}">
-              ${user.playerName}
-            </option>`
-        )}
+            <option value="">Select a player</option>
+            ${usersByGroupGlobal.map(
+              (user) =>
+                `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">
+                  ${user.name}
+                </option>`
+            )}
         </select>
       </div>
 
@@ -379,8 +418,6 @@ const basePlayerIndex = uuidv4();
       "player-list"
     ) as HTMLElement;
 
-    const playerItems = playerStatsDiv.querySelectorAll(".player-item");
-
     const newRow = document.createElement("div");
     newRow.setAttribute("class", "player-item space-y-4");
 
@@ -396,11 +433,12 @@ const basePlayerIndex = uuidv4();
           name="playerList[${newPlayerIndex}][playerId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
         >
-          ${usersByGroupOptionsParsed.map(
-            (user) => `
-          <option value="${user.playerId}">${user.playerName}</option>
-          `
-          )}
+                    ${usersByGroupGlobal?.map(
+                      (user) =>
+                        `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">
+                ${user.name}
+              </option>`
+                    )}
         </select>
       </div>
 

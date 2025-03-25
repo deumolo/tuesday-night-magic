@@ -6,6 +6,7 @@ import {
   getDecks,
   getGroupsUser,
   getMatchInfo,
+  getUsersGroup,
   newUser,
   createGroup,
   createDeck,
@@ -26,6 +27,7 @@ export const server = {
   getDecksUser,
   getMatchesUser,
   getDeckDetails,
+  getUsersGroup,
   editDeck,
   deleteDeck,
 };

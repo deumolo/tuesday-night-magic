@@ -66,8 +66,7 @@ export const getMatchInfo = defineAction({
           })),
       }));
 
-      console.dir(finalData, { depth: null });
-
+      // console.dir(finalData, { depth: null });
 
       return {
         success: true,
