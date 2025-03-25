@@ -14,9 +14,6 @@ import { SignIn, SignOut } from 'auth-astro/components';
 	<Welcome />
 
 	{session ? (
-		<div>
-			{JSON.stringify(session)}
-		</div>
 	<SignOut> Log out</SignOut>
 	) : (
 	<SignIn provider='google'> Log in</SignIn>)}

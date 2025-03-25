@@ -1,0 +1,19 @@
+---
+const prerender = false;	
+import Layout from '../layouts/Layout.astro';
+import { actions } from "astro:actions";
+const formData = new FormData();
+const { data, error } = await Astro.callAction(
+  actions.newSampleData,
+  {
+	groupId: "123",
+  }
+);
+
+---
+
+<Layout>
+	<div>
+		Sample data action page
+	</div>
+</Layout>

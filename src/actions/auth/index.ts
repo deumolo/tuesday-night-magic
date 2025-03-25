@@ -14,6 +14,7 @@ export * from "./new-user.action";
 export * from "./new-group.action";
 export * from "./new-deck.action";
 export * from "./new-match.action";
+export * from "./new-sample-data.action";
 
 export * from "./edit-deck.action";
 
