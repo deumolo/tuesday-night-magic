@@ -7,12 +7,6 @@ export const getDecksUser = defineAction({
   handler: async (input, { cookies }) => {
     try {
 
-      const firstGroup = await db.select({
-        id: Group.id,
-      }).from(Group).limit(1).execute();
-
-      const groupId = firstGroup[0].id;
-
       const decks = await db
         .select({
           deckId: Deck.id,

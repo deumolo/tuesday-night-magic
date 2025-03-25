@@ -12,47 +12,47 @@ const user3id = UUID();
 const user4id = UUID();
 
 export default async function () {
-  await db.insert(Group).values([
-    { id: group1id, name: "Kasim", private: false, password: "1234" },
-    { id: group2id, name: "Tarkin", private: false, password: "1234" },
-    { id: group3id, name: "Innistrad", private: false, password: "1234" },
-    { id: group4id, name: "Starwars", private: false, password: "1234" },
-  ]);
+  // await db.insert(Group).values([
+  //   { id: group1id, name: "Kasim", private: false, password: "1234" },
+  //   { id: group2id, name: "Tarkin", private: false, password: "1234" },
+  //   { id: group3id, name: "Innistrad", private: false, password: "1234" },
+  //   { id: group4id, name: "Starwars", private: false, password: "1234" },
+  // ]);
 
-  await db.insert(User).values([
-    {
-      id: user2id,
-      name: "Ricardo Luna",
-      email: "rluna@gmail.com",
-      password: "1234",
-    },
-    {
-      id: user3id,
-      name: "Guillermo Silva",
-      email: "gsilva@gmail.com",
-      password: "1234",
-    },
-    {
-      id: user4id,
-      name: "Alejandro Silva",
-      email: "asilva@gmail.com",
-      password: "1234",
-    },
-  ]);
+  // await db.insert(User).values([
+  //   {
+  //     id: user2id,
+  //     name: "Ricardo Luna",
+  //     email: "rluna@gmail.com",
+  //     password: "1234",
+  //   },
+  //   {
+  //     id: user3id,
+  //     name: "Guillermo Silva",
+  //     email: "gsilva@gmail.com",
+  //     password: "1234",
+  //   },
+  //   {
+  //     id: user4id,
+  //     name: "Alejandro Silva",
+  //     email: "asilva@gmail.com",
+  //     password: "1234",
+  //   },
+  // ]);
 
-  await db.insert(Deck).values([
-    {
-      id: UUID(),
-      name: "Jinnie Faye",
-      // privateDeck: false,
-      moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
-      userId: user2id,
-    },
-  ]);
+  // await db.insert(Deck).values([
+  //   {
+  //     id: UUID(),
+  //     name: "Jinnie Faye",
+  //     // privateDeck: false,
+  //     moxfieldLink: "https://www.moxfield.com/decks/uWMGmVENH0C23PgHZxIQ0Q",
+  //     userId: user2id,
+  //   },
+  // ]);
 
-  await db.insert(UserGroup).values([
-    { id: UUID(), userId: user2id, groupId: group1id },
-    { id: UUID(), userId: user3id, groupId: group1id },
-    { id: UUID(), userId: user4id, groupId: group1id },
-  ]);
+  // await db.insert(UserGroup).values([
+  //   { id: UUID(), userId: user2id, groupId: group1id },
+  //   { id: UUID(), userId: user3id, groupId: group1id },
+  //   { id: UUID(), userId: user4id, groupId: group1id },
+  // ]);
 }

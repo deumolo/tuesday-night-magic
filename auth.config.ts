@@ -39,10 +39,18 @@ export default defineConfig({
           password: bcrypt.hashSync("adyvgre0g"),
         };
 
-        const queries = [db.insert(User).values(newUser)] as const;
-        await db.batch(queries);
+        const [dbUser] = await db
+          .select()
+          .from(User)
+          .where(eq(User.email, user.email ?? ""))
+          .limit(1);
 
-        console.log("User added to Astro DB:", user.email);
+        if (!dbUser) {
+          const queries = [db.insert(User).values(newUser)] as const;
+          await db.batch(queries);
+
+          console.log("User added to Astro DB:", user.email);
+        }
       } catch (error) {
         console.error("Error saving user:", error);
         return false; // Reject sign-in if DB insert fails
