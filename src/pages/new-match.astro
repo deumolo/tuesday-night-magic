@@ -433,12 +433,11 @@ const basePlayerIndex = uuidv4();
           name="playerList[${newPlayerIndex}][playerId]"
           class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
         >
-                    ${usersByGroupGlobal?.map(
-                      (user) =>
-                        `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">
-                ${user.name}
-              </option>`
-                    )}
+              <option value="">Select a player</option>
+              ${usersByGroupGlobal?.map(
+                (user) =>
+                  `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">${user.name}</option>`
+              )}
         </select>
       </div>
 
