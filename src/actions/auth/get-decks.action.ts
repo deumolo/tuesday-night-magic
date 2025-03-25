@@ -19,7 +19,6 @@ export const getDecks = defineAction({
           deckId: Deck.id,
           name: User.name,
           deckName: Deck.name,
-          private: Deck.privateDeck,
           moxfieldLink: Deck.moxfieldLink,
           createdAt: Deck.createdAt,
           userId: Deck.userId,
