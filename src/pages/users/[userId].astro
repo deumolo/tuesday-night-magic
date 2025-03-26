@@ -67,7 +67,7 @@ const { data: matchesData, error: matchesError } = await Astro.callAction(
                     scope="row"
                     class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {match.matchId}
+                    <a href={`/matches/${match.matchId}`}>{match.matchId}</a>
                   </th>
                   <td class="px-6 py-4"> {match.turns} </td>
                   <td class="px-6 py-4">

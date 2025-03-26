@@ -4,6 +4,7 @@ export * from "./get-decks.action";
 export * from "./get-match-info.action";
 
 export * from "./get-deck-details.action";
+export * from "./get-match-details.action";
 
 export * from "./get-groups-user.action";
 export * from "./get-decks-user.action";

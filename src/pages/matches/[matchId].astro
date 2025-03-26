@@ -1,0 +1,47 @@
+---
+export const prerender = false;
+import ModalWindow from "../../components/ModalWindow.astro";
+import Layout from "../../layouts/Layout.astro";
+const { matchId } = Astro.params;
+
+import { actions } from "astro:actions";
+
+const { data: matchDetailsData, error: matchDetailsError } =
+  await Astro.callAction(actions.getMatchDetails, {
+    matchId,
+  });
+---
+
+<Layout>
+  <div class="mt-4">
+    <div>
+      Match: {matchId}
+    </div>
+
+    <div class="mt-4">
+      {
+        matchDetailsData?.match?.players.map((player) => (
+          <div>
+            <div class="text-2xl">{player.player}</div>
+
+            <div>
+              <div class="text-sm">Kills</div>
+
+              <div>
+                {player.opponents.map((opponent) => (
+                  <div>
+                    {opponent.opponent} - Killed with commander damange:{" "}
+                    {opponent.commanderDamage.toString()}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <hr class="my-4" />
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="mt-2"></div>
+  </div>
+</Layout>
