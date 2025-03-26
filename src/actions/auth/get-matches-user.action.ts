@@ -10,7 +10,18 @@ import {
   Match,
   eq,
   or,
+  exists,
+  and,
 } from "astro:db";
+
+interface MatchData {
+  matchId: string;
+  groupId: string;
+  turns: number;
+  createdAt: Date;
+  participants: { playerId: string; name: string; email: string }[];
+  winnerId: string;
+}
 
 export const getMatchesUser = defineAction({
   accept: "json",
@@ -25,26 +36,24 @@ export const getMatchesUser = defineAction({
           playerId: PlayerMatches.playerId,
           userName: User.name,
           userEmail: User.email,
+          winnerId: Match.winnerId,
         })
         .from(Match)
         .innerJoin(PlayerMatches, eq(PlayerMatches.matchId, Match.id))
         .innerJoin(User, eq(PlayerMatches.playerId, User.id))
         .where(
-          or(
-            eq(PlayerMatches.playerId, input.userId),
-            eq(Match.winnerId, input.userId)
+          exists(
+            db
+              .select()
+              .from(PlayerMatches)
+              .where(
+                and(
+                  eq(PlayerMatches.matchId, Match.id),
+                  eq(PlayerMatches.playerId, input.userId)
+                )
+              )
           )
         );
-
-        console.log("matches: ", matches);
-
-      interface MatchData {
-        matchId: string;
-        groupId: string;
-        turns: number;
-        createdAt: Date;
-        participants: { playerId: string; name: string; email: string }[];
-      }
 
       const formattedMatches = matches.reduce<MatchData[]>((acc, match) => {
         // Check if match already exists in the accumulator
@@ -58,6 +67,7 @@ export const getMatchesUser = defineAction({
             turns: match.turns ?? 0,
             createdAt: match.createdAt,
             participants: [],
+            winnerId: match.winnerId,
           };
           acc.push(matchData);
         }
@@ -72,11 +82,22 @@ export const getMatchesUser = defineAction({
         return acc;
       }, []);
 
-      console.log("formattedMatches: ", formattedMatches);
+      const formattedMatchesV2 = formattedMatches.map((match) => {
+        const { winnerId, ...rest } = match; 
+        return {
+          ...rest,
+          winner: {
+            winnerId: match.winnerId,
+            winnerName: match.participants.find(
+              (p) => p.playerId === match.winnerId
+            )?.name,
+          },
+        };
+      });
 
       return {
         success: true,
-        matches: formattedMatches,
+        matches: formattedMatchesV2,
       };
     } catch (error) {
       console.error("Error: ", error);
