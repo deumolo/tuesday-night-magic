@@ -1,0 +1,70 @@
+---
+const prerender = false;	
+import Welcome from '../components/Welcome.astro';
+import Layout from '../layouts/Layout.astro';
+import { getSession } from 'auth-astro/server';
+const session = await getSession(Astro.request);
+import { SignIn, SignOut } from 'auth-astro/components';
+
+// Get the intended destination from URL params
+const url = new URL(Astro.request.url);
+const redirectTo = url.searchParams.get('redirectTo') || '/';
+---
+
+<Layout>
+	<main class="container mx-auto px-4 py-8">
+		<div class="max-w-lg mx-auto text-center">
+			{session ? (
+				<!-- User is already logged in -->
+				<div class="space-y-6">
+					<h2 class="text-xl text-gray-600">You're already signed in to Tuesday Night Magic</h2>
+					<a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition-colors font-medium">
+						Go to Homepage
+					</a>
+				</div>
+			) : (
+				<!-- User needs to log in -->
+				<div class="space-y-8">
+					<h2 class="text-xl text-gray-600">Please log in to access Tuesday Night Magic</h2>
+					<div class="mt-12">
+						<div class="custom-signin-button">
+							<SignIn provider='google'>
+								Sign In with Google
+							</SignIn>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	</main>
+</Layout>
+
+<style>
+	.custom-signin-button :global(form) {
+		display: inline-block;
+	}
+	
+	.custom-signin-button :global(button) {
+		background-color: #2563eb !important;
+		color: white !important;
+		padding: 16px 32px !important;
+		border-radius: 8px !important;
+		border: 1px solid #1d4ed8 !important;
+		font-size: 18px !important;
+		font-weight: 500 !important;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+		transition: all 0.2s ease-in-out !important;
+		cursor: pointer !important;
+		display: inline-block !important;
+	}
+	
+	.custom-signin-button :global(button:hover) {
+		background-color: #1d4ed8 !important;
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+		transform: translateY(-2px) !important;
+	}
+	
+	.custom-signin-button :global(button:active) {
+		transform: translateY(0px) !important;
+	}
+</style>

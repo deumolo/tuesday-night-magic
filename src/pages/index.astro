@@ -1,21 +1,82 @@
 ---
- const prerender = false;	
+const prerender = false;	
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 import { getSession } from 'auth-astro/server';
 const session = await getSession(Astro.request)
 import { SignIn, SignOut } from 'auth-astro/components';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome />
+	<main class="container mx-auto px-4 py-8">
+		<!-- Welcome Section -->
+		<div class="text-center max-w-4xl mx-auto">
+			<h1 class="text-5xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+				Welcome to Tuesday Night Magic
+			</h1>
+			
+			<h2 class="text-2xl text-gray-700 mb-8 font-medium">
+				Your Ultimate Magic: The Gathering Match Tracker
+			</h2>
 
-	{session ? (
-	<SignOut> Log out</SignOut>
-	) : (
-	<SignIn provider='google'> Log in</SignIn>)}
+			<div class="text-lg text-gray-600 leading-relaxed space-y-4 mb-12">
+				<p>
+					Track your Magic: The Gathering matches, build your deck collection, and connect with fellow planeswalkers 
+					in our comprehensive match tracking platform.
+				</p>
+				
+				<p>
+					Whether you're playing casual games with friends or competing in tournaments, Tuesday Night Magic 
+					helps you keep detailed records of your games, analyze your performance, and improve your gameplay.
+				</p>
 
+				<p>
+					Create and manage your decks, track wins and losses, and discover insights about your playing patterns. 
+					Join groups, organize matches, and make every Tuesday night (and every other night) magical!
+				</p>
+			</div>
+
+			<!-- Feature Highlights -->
+			<div class="grid md:grid-cols-3 gap-8 mt-12">
+				<div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+					<h3 class="text-xl font-semibold text-gray-800 mb-3">Track Matches</h3>
+					<p class="text-gray-600">Record detailed match results, including opponents, decks used, and game outcomes.</p>
+				</div>
+				
+				<div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+					<h3 class="text-xl font-semibold text-gray-800 mb-3">Manage Decks</h3>
+					<p class="text-gray-600">Build and organize your deck collection with detailed card lists and strategies.</p>
+				</div>
+				
+				<div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+					<h3 class="text-xl font-semibold text-gray-800 mb-3">Join Groups</h3>
+					<p class="text-gray-600">Connect with local playgroups and organize regular gaming sessions.</p>
+				</div>
+			</div>
+
+			{session && (
+				<div class="mt-12">
+					<p class="text-lg text-gray-700 mb-6">Welcome back! Ready to track your next match?</p>
+					<div class="flex justify-center space-x-4">
+						<a href="/new-match" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors font-medium">
+							Record New Match
+						</a>
+						<a href="/decks" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors font-medium">
+							View My Decks
+						</a>
+					</div>
+				</div>
+			)}
+
+			{!session && (
+				<div class="mt-12 bg-gray-50 p-8 rounded-lg">
+					<h3 class="text-xl font-semibold text-gray-800 mb-4">Get Started</h3>
+					<p class="text-gray-600 mb-6">Log in to start tracking your Magic: The Gathering matches and building your deck collection.</p>
+					<SignIn provider='google' class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg transition-colors font-medium">
+						Sign Up / Log In
+					</SignIn>
+				</div>
+			)}
+		</div>
+	</main>
 </Layout>
