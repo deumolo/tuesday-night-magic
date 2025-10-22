@@ -25,62 +25,159 @@ const deck = deckDetailsData?.deck;
 ---
 
 <Layout>
-  <div class="z-10">
-    <div>
-      <div>
-        <h3 class="text-2xl">New deck</h3>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-3 mb-4">
+        <a href={`/decks/${deckId}`} class="text-blue-600 hover:text-blue-800 flex items-center space-x-1 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back to Deck Details</span>
+        </a>
       </div>
-      <form>
-        <div>
-          <input
-            class="w-full py-2 border"
-            type="text"
-            name="name"
-            placeholder="Deck name"
-            value={deck?.name}
-          />
+      
+      <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0 h-16 w-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+          {deck?.name?.charAt(0)?.toUpperCase() || "✏️"}
         </div>
         <div>
-          <input
-            class="w-full py-2 border"
-            type="text"
-            name="moxfieldLink"
-            placeholder="Moxfield link"
-            value={deck?.moxfieldLink}
-          />
+          <h1 class="text-4xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Edit Deck
+          </h1>
+          <p class="text-gray-600 mt-1">Update your Magic: The Gathering deck</p>
         </div>
+      </div>
+    </div>
 
-        <div>
+    <!-- Edit Form Card -->
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden max-w-2xl mx-auto">
+      <!-- Card Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4">
+        <h2 class="text-xl font-semibold flex items-center space-x-2">
+          <span>✏️</span>
+          <span>Edit Deck Information</span>
+        </h2>
+      </div>
+
+      <!-- Form Content -->
+      <div class="p-6">
+        <form class="space-y-6">
+          <!-- Deck Name Field -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+              <span>🃏</span>
+              <span>Deck Name</span>
+            </label>
+            <input
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+              type="text"
+              name="name"
+              placeholder="Enter your deck name..."
+              value={deck?.name}
+              required
+            />
+            <p class="mt-1 text-sm text-gray-500">Choose a memorable name for your deck</p>
+          </div>
+
+          <!-- Moxfield Link Field -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+              <span>🔗</span>
+              <span>Moxfield Link</span>
+            </label>
+            <input
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+              type="url"
+              name="moxfieldLink"
+              placeholder="https://www.moxfield.com/decks/..."
+              value={deck?.moxfieldLink}
+            />
+            <p class="mt-1 text-sm text-gray-500">Link to your deck on Moxfield</p>
+          </div>
+
+          <!-- Hidden Fields -->
           <input type="hidden" name="userId" value={user?.id} />
-        </div>
-        
-        <div>
           <input type="hidden" name="deckId" value={deckId} />
-        </div>
-        <div>
-          <button
-            type="submit"
-            id="btn-submit"
-            class="bg-black text-white rounded-lg px-5 py-2.5"
-          >
-            Save
-          </button>
-        </div>
-      </form>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
+            <button
+              type="submit"
+              id="btn-submit"
+              class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>Save Changes</span>
+            </button>
+            
+            <a href={`/decks/${deckId}`} class="flex-1">
+              <button
+                type="button"
+                class="w-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <span>Cancel</span>
+              </button>
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tips Card -->
+    <div class="bg-blue-50 rounded-lg border border-blue-200 p-6 max-w-2xl mx-auto mt-6">
+      <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center space-x-2">
+        <span>💡</span>
+        <span>Tips for Better Deck Management</span>
+      </h3>
+      <ul class="space-y-2 text-blue-700">
+        <li class="flex items-start space-x-2">
+          <span class="text-blue-500 mt-0.5">•</span>
+          <span>Use descriptive names that include the deck's strategy or format</span>
+        </li>
+        <li class="flex items-start space-x-2">
+          <span class="text-blue-500 mt-0.5">•</span>
+          <span>Moxfield links help you track your complete deck list and updates</span>
+        </li>
+        <li class="flex items-start space-x-2">
+          <span class="text-blue-500 mt-0.5">•</span>
+          <span>Keep your deck information updated for better match tracking</span>
+        </li>
+      </ul>
     </div>
   </div>
 
+  <!-- Enhanced Error Modal -->
   <ModalWindow>
-    <div>
-      <h3 id="modal-title" class="text-2xl">New deck not created</h3>
-      <div class="modal-window-content"></div>
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-4">
+      <h3 id="modal-title" class="text-xl font-semibold flex items-center space-x-2">
+        <span>⚠️</span>
+        <span>Update Failed</span>
+      </h3>
     </div>
-    <div>
-      <button
-        id="close-modal"
-        type="button"
-        class="bg-black text-white rounded-lg px-5 py-2.5">Close</button
-      >
+
+    <!-- Modal Content -->
+    <div class="p-6 bg-white">
+      <div class="modal-window-content text-gray-700"></div>
+      
+      <div class="flex justify-end mt-6">
+        <button
+          id="close-modal"
+          type="button"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span>Close</span>
+        </button>
+      </div>
     </div>
   </ModalWindow>
 </Layout>

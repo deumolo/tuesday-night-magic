@@ -13,55 +13,163 @@ const { data: deckDetailsData, error: deckDetailsError } =
 ---
 
 <Layout>
-  <h1 class="text-2xl">
-    {deckDetailsData?.deck.name}
-  </h1>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-3 mb-4">
+        <a href="/decks" class="text-blue-600 hover:text-blue-800 flex items-center space-x-1 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back to Decks</span>
+        </a>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0 h-16 w-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+          {deckDetailsData?.deck?.name?.charAt(0)?.toUpperCase() || "🃏"}
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {deckDetailsData?.deck?.name || "Deck Details"}
+          </h1>
+          <p class="text-gray-600 mt-1">Magic: The Gathering Deck</p>
+        </div>
+      </div>
+    </div>
 
-  <div>{deckDetailsData?.deck?.moxfieldLink}</div>
+    <!-- Deck Details Card -->
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden mb-8">
+      <!-- Card Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4">
+        <h2 class="text-xl font-semibold flex items-center space-x-2">
+          <span>📋</span>
+          <span>Deck Information</span>
+        </h2>
+      </div>
 
-  <div>
-    {deckDetailsData?.deck?.userId}
-  </div>
+      <!-- Card Content -->
+      <div class="p-6 space-y-6">
+        <!-- Moxfield Link -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+            <span>🔗</span>
+            <span>Moxfield Link</span>
+          </label>
+          {deckDetailsData?.deck?.moxfieldLink ? (
+            <a 
+              href={deckDetailsData.deck.moxfieldLink} 
+              target="_blank" 
+              class="inline-flex items-center space-x-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              <span>View on Moxfield</span>
+            </a>
+          ) : (
+            <span class="text-gray-500 italic">No Moxfield link provided</span>
+          )}
+        </div>
 
-  <div>{deckDetailsData?.deck?.createdAt}</div>
+        <!-- User ID -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+            <span>👤</span>
+            <span>Owner</span>
+          </label>
+          <span class="text-gray-600 bg-white px-3 py-1 rounded-full text-sm border">
+            User ID: {deckDetailsData?.deck?.userId || "Unknown"}
+          </span>
+        </div>
 
-  <div>
-    <a href={`/decks/edit/${deckId}`}>
-      <button
-        id="btn-submit"
-        class="bg-black text-white rounded-lg px-5 py-2.5"
-      >
-        Edit
-      </button>
-    </a>
-    <button
-      id="btn-delete"
-      class="bg-red-900 text-white rounded-lg px-5 py-2.5"
-    >
-      Delete
-    </button>
-  </div>
+        <!-- Created Date -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+            <span>📅</span>
+            <span>Date Created</span>
+          </label>
+          <span class="text-gray-600 bg-white px-3 py-1 rounded-full text-sm border">
+            {deckDetailsData?.deck?.createdAt?.toLocaleDateString("en-GB") || "Unknown"}
+          </span>
+        </div>
+      </div>
+    </div>
 
-  <div>
+    <!-- Action Buttons -->
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-4">
+        <h2 class="text-xl font-semibold flex items-center space-x-2">
+          <span>⚙️</span>
+          <span>Actions</span>
+        </h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="flex flex-wrap gap-4">
+          <a href={`/decks/edit/${deckId}`}>
+            <button
+              id="btn-submit"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              <span>Edit Deck</span>
+            </button>
+          </a>
+          
+          <button
+            id="btn-delete"
+            class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            <span>Delete Deck</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <input id="deck-id-input" type="hidden" value={deckId} />
   </div>
 
+  <!-- Enhanced Modal -->
   <ModalWindow>
-    <div>
-      <div class="text-2xl">Confirm delete deck?</div>
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4">
+      <h3 class="text-xl font-semibold flex items-center space-x-2">
+        <span>⚠️</span>
+        <span>Confirm Deletion</span>
+      </h3>
+    </div>
 
-      <div>
+    <!-- Modal Content -->
+    <div class="p-6 bg-white">
+      <p class="text-gray-700 mb-6">
+        Are you sure you want to delete this deck? This action cannot be undone.
+      </p>
+      
+      <div class="flex space-x-4 justify-end">
         <button
           id="close-modal"
-          class="bg-red-900 text-white rounded-lg px-5 py-2.5"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
         >
-          Close
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span>Cancel</span>
         </button>
+        
         <button
           id="confirm-delete"
-          class="bg-green-900 text-white rounded-lg px-5 py-2.5"
+          class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
         >
-          Confirm
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span>Delete</span>
         </button>
       </div>
     </div>
