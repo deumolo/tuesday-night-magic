@@ -4,6 +4,7 @@ export * from "./get-decks.action";
 export * from "./get-match-info.action";
 
 export * from "./get-deck-details.action";
+export * from "./get-group-details.action";
 
 export * from "./get-groups-user.action";
 export * from "./get-decks-user.action";
@@ -15,6 +16,9 @@ export * from "./new-group.action";
 export * from "./new-deck.action";
 export * from "./new-match.action";
 export * from "./new-sample-data.action";
+
+export * from "./join-group.action";
+export * from "./leave-group.action";
 
 export * from "./edit-deck.action";
 
