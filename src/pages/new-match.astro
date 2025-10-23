@@ -23,128 +23,225 @@ const basePlayerIndex = uuidv4();
 ---
 
 <Layout>
-  <form class="space-y-5 w-3/4 mx-auto">
-    <div>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-3 mb-4">
+        <a href="/" class="text-blue-600 hover:text-blue-800 flex items-center space-x-1 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back to Home</span>
+        </a>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0 h-16 w-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+          ⚔️
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Record New Match
+          </h1>
+          <p class="text-gray-600 mt-1">Track your Magic: The Gathering game results</p>
+        </div>
+      </div>
+    </div>
+
+    <form class="space-y-8 max-w-4xl mx-auto">
       <input type="hidden" id="user-id-input" name="userId" value={user?.id} />
-    </div>
 
-    <div>
-      <label class="">Group: </label>
-      <select
-        name="groupId"
-        id="group-list"
-        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-      >
-        <option value="">Select a group</option>
-        {
-          getGroupsUser &&
-            "success" in getGroupsUser &&
-            getGroupsUser.groups?.map((group) => (
-              <option value={group.id} data-group-id={group.id}>
-                {group.name}
-              </option>
-            ))
-        }
-      </select>
-    </div>
+      <!-- Match Setup Card -->
+      <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4">
+          <h2 class="text-xl font-semibold flex items-center space-x-2">
+            <span>⚙️</span>
+            <span>Match Setup</span>
+          </h2>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          <!-- Group Selection -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+              <span>👥</span>
+              <span>Select Group</span>
+            </label>
+            <select
+              name="groupId"
+              id="group-list"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+            >
+              <option value="">Choose your playgroup...</option>
+              {
+                getGroupsUser &&
+                  "success" in getGroupsUser &&
+                  getGroupsUser.groups?.map((group) => (
+                    <option value={group.id} data-group-id={group.id}>
+                      {group.name}
+                    </option>
+                  ))
+              }
+            </select>
+            <p class="mt-1 text-sm text-gray-500">Select the group this match was played with</p>
+          </div>
 
-    <div class="flex justify-between">
-      <div class="space-x-4">
-        <label for="">Turns: </label>
-        <input
-          type="number"
-          name="turns"
-          class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-          placeholder="Number of turns"
-        />
+          <!-- Match Details -->
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+                <span>🔄</span>
+                <span>Number of Turns</span>
+              </label>
+              <input
+                type="number"
+                name="turns"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+                placeholder="How many turns did the game last?"
+                min="1"
+              />
+              <p class="mt-1 text-sm text-gray-500">Total turns played in the match</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+                <span>🏆</span>
+                <span>Winner</span>
+              </label>
+              <select
+                id="winner-select"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+                name="winnerId"
+              >
+                <option value="">Select the winner...</option>
+              </select>
+              <p class="mt-1 text-sm text-gray-500">Who won this match?</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <button
-          type="button"
-          id="add-player"
-          class="disabled:bg-gray-200 bg-orange-500 text-white px-4 py-2 rounded-md disabled:cursor-not-allowed flex justify-center cursor-pointer transition ease-in duration-500"
-          >Add Player</button
-        >
+      <!-- Players Card -->
+      <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold flex items-center space-x-2">
+              <span>👤</span>
+              <span>Players & Decks</span>
+            </h2>
+            <button
+              type="button"
+              id="add-player"
+              class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span>Add Player</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <div id="player-list" class="space-y-6">
+            <div class="player-item">
+              <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div class="player-details grid md:grid-cols-3 gap-4" data-player-index={basePlayerIndex}>
+                  <!-- Player Selection -->
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Player</label>
+                    <select
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors player-select"
+                      name=`playerList[${basePlayerIndex}][playerId]`
+                    >
+                      <option value="">Select player...</option>
+                    </select>
+                  </div>
+
+                  <!-- Deck Selection -->
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Deck</label>
+                    <select
+                      name=`playerList[${basePlayerIndex}][deckId]`
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors player-decks"
+                    >
+                      <option value="">Select deck...</option>
+                    </select>
+                  </div>
+
+                  <!-- Commander Tax -->
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Commander Tax</label>
+                    <div class="flex space-x-2">
+                      <input
+                        type="number"
+                        name=`playerList[${basePlayerIndex}][commanderTax]`
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="Tax amount"
+                        min="0"
+                      />
+                      <button
+                        type="button"
+                        class="add-kill bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                        title="Add Kill"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Player Stats (Kills) -->
+                <div class="player-stats mt-4 space-y-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-center pt-6">
         <button
           type="submit"
-          class="disabled:bg-gray-200 bg-green-500 text-white px-4 py-2 rounded-md disabled:cursor-not-allowed flex justify-center cursor-pointer transition ease-in duration-500"
-          >Submit</button
+          class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-4 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2"
         >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>Record Match</span>
+        </button>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <div class="space-x-4">
-      <label for="">Winner: </label>
-      <select
-        id="winner-select"
-        class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-        name="winnerId"
-      >
-        <option value="">Select a winner</option>
-      </select>
-    </div>
-
-    <div id="player-list" class="space-y-5">
-      <div class="player-item space-y-4">
-        <hr class="my-8" />
-        <div
-          class="player-details space-x-4 flex"
-          data-player-index={basePlayerIndex}
-        >
-          <div>
-            <label for="">Player: </label>
-            <select
-              class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
-              name=`playerList[${basePlayerIndex}][playerId]`
-            >
-              <option value="">Select a player</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="">Deck: </label>
-            <select
-              name=`playerList[${basePlayerIndex}][deckId]`
-              class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
-            >
-              <option value="">Select a deck</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="">Commander Tax: </label>
-            <input
-              type="number"
-              name=`playerList[${basePlayerIndex}][commanderTax]`
-              class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-              placeholder="Tax"
-            />
-          </div>
-
-          <button
-            type="button"
-            id=""
-            class="add-kill ml-4 disabled:bg-gray-200 disabled:cursor-not-allowed justify-center cursor-pointer transition ease-in duration-500"
-            >Add kill</button
-          >
-        </div>
-        <div class="player-stats space-y-4"></div>
-      </div>
-    </div>
-  </form>
-
+  <!-- Enhanced Modal -->
   <ModalWindow>
-    <div>
-      <h3 id="modal-title" class="text-2xl">New match not created</h3>
-      <div class="modal-window-content"></div>
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-4">
+      <h3 id="modal-title" class="text-xl font-semibold flex items-center space-x-2">
+        <span>⚠️</span>
+        <span>Match Creation Failed</span>
+      </h3>
     </div>
-    <div>
-      <button
-        id="close-modal"
-        type="button"
-        class="bg-black text-white rounded-lg px-5 py-2.5">Close</button
-      >
+
+    <!-- Modal Content -->
+    <div class="p-6 bg-white">
+      <div class="modal-window-content text-gray-700"></div>
+      
+      <div class="flex justify-end mt-6">
+        <button
+          id="close-modal"
+          type="button"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span>Close</span>
+        </button>
+      </div>
     </div>
   </ModalWindow>
 </Layout>
@@ -291,7 +388,7 @@ const basePlayerIndex = uuidv4();
 
         modalWindowContentDiv.innerHTML = `
         <div class="text-sm text-gray-500">
-          <ul>
+          <ul class="list-none space-y-1">
             ${data.error ? data.error.map((error) => `<li>${typeof error === "string" ? error : error.message}</li>`).join("") : ""}
           </ul>
         </div>
@@ -350,63 +447,67 @@ const basePlayerIndex = uuidv4();
     const clickedEvent = target?.closest("button") as HTMLButtonElement | null;
 
     if (clickedEvent && clickedEvent.classList.contains("add-kill")) {
-      // player stats section
-      const clickedEventStats = clickedEvent.parentElement
-        ?.nextElementSibling as HTMLDivElement;
-
-      const clickedEventKills =
-        clickedEventStats.querySelectorAll(".player-kill-item");
-
-      const clickedPlayerIndex =
-        clickedEvent.parentElement?.getAttribute("data-player-index") ?? "0";
+      // Find the player-details div that contains the data-player-index
+      const playerDetailsDiv = clickedEvent.closest(".player-details") as HTMLDivElement;
+      const clickedPlayerIndex = playerDetailsDiv?.getAttribute("data-player-index") ?? "0";
+      
+      // Find the player-stats section which is a sibling of player-details
+      const clickedEventStats = playerDetailsDiv?.parentElement?.querySelector(".player-stats") as HTMLDivElement;
 
       const randomIndex = uuidv4();
 
       const newItem = document.createElement("div");
-      newItem.setAttribute("class", "flex space-x-4 player-kill-item");
+      newItem.setAttribute("class", "bg-white rounded-lg p-3 border border-gray-200 player-kill-item");
       newItem.innerHTML = `
-      <div class="space-x-4">
-        <label> Opponent: </label>
-        <select name="playerList[${clickedPlayerIndex}][${randomIndex}][opponentId]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
-            <option value="">Select a player</option>
-            ${usersByGroupGlobal.map(
-              (user) =>
-                `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">
-                  ${user.name}
-                </option>`
-            )}
-        </select>
+      <div class="grid md:grid-cols-3 gap-3 items-end">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Opponent Eliminated</label>
+          <select name="playerList[${clickedPlayerIndex}][${randomIndex}][opponentId]" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm player-select">
+              <option value="">Select opponent...</option>
+              ${usersByGroupGlobal.map(
+                (user) =>
+                  `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">
+                    ${user.name}
+                  </option>`
+              )}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Commander Damage?</label>
+          <select name="playerList[${clickedPlayerIndex}][${randomIndex}][commanderDamage]" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="delete-kill bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+            title="Remove Kill"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </div>
       </div>
-
-
-    <div class="space-x-4 flex items-center">
-      <label for="commander-damage">Commander damage:</label>
-        <select name="playerList[${clickedPlayerIndex}][${randomIndex}][commanderDamage]" class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select">
-            <option value="false">
-              False
-            </option>
-            <option value="true">
-              True
-            </option>
-        </select>
-    </div>
-
-    <div class="flex items-center cursor-pointer">
-      <button class="delete-kill">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
-      </button>
-    </div>
-    `;
+      `;
 
       clickedEventStats.appendChild(newItem);
     }
 
     if (clickedEvent && clickedEvent.classList.contains("delete-kill")) {
-      clickedEvent.parentElement?.parentElement?.remove();
+      // Find the kill item container (with class player-kill-item) and remove it
+      const killItem = clickedEvent.closest(".player-kill-item");
+      killItem?.remove();
     }
 
     if (clickedEvent && clickedEvent.classList.contains("delete-player")) {
-      clickedEvent.parentElement?.parentElement?.parentElement?.remove();
+      // Find the player item container (with class player-item) and remove it
+      const playerItem = clickedEvent.closest(".player-item");
+      playerItem?.remove();
     }
   });
 
@@ -418,67 +519,75 @@ const basePlayerIndex = uuidv4();
       "player-list"
     ) as HTMLElement;
 
-    const newRow = document.createElement("div");
-    newRow.setAttribute("class", "player-item space-y-4");
+      const newRow = document.createElement("div");
+    newRow.setAttribute("class", "player-item");
 
     const newRowBase = `
-    <hr class="my-8" />
-    <div
-      class="player-details space-x-4 flex"
-      data-player-index="${newPlayerIndex}"
-    >
-      <div>
-        <label> Player: </label>
-        <select
-          name="playerList[${newPlayerIndex}][playerId]"
-          class="text-base px-4 py-2 border rounded-lg focus:outline-none player-select"
-        >
-              <option value="">Select a player</option>
-              ${usersByGroupGlobal?.map(
-                (user) =>
-                  `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">${user.name}</option>`
-              )}
-        </select>
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <div class="player-details grid md:grid-cols-3 gap-4" data-player-index="${newPlayerIndex}">
+        <!-- Player Selection -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Player</label>
+          <select
+            name="playerList[${newPlayerIndex}][playerId]"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors player-select"
+          >
+            <option value="">Select player...</option>
+            ${usersByGroupGlobal?.map(
+              (user) =>
+                `<option value="${user.id}" data-player-id="${user.id}" data-player-name="${user.name}">${user.name}</option>`
+            )}
+          </select>
+        </div>
+
+        <!-- Deck Selection -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Deck</label>
+          <select
+            name="playerList[${newPlayerIndex}][deckId]"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors player-decks"
+          >
+            <option value="">Select deck...</option>
+          </select>
+        </div>
+
+        <!-- Commander Tax -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Commander Tax</label>
+          <div class="flex space-x-2">
+            <input
+              name="playerList[${newPlayerIndex}][commanderTax]"
+              type="number"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Tax amount"
+              min="0"
+            />
+            <button
+              type="button"
+              class="add-kill bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+              title="Add Kill"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="delete-player bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+              title="Remove Player"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label for="">Deck: </label>
-        <select
-          name="playerList[${newPlayerIndex}][deckId]"
-          class="text-base px-4 py-2 border rounded-lg focus:outline-none player-decks"
-        >
-          <option value="">Select a deck</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="">Commander Tax: </label>
-        <input
-          name="playerList[${newPlayerIndex}][commanderTax]"
-          type="number"
-          class="text-base px-4 py-2 border rounded-lg focus:outline-none"
-          placeholder="Tax"
-        />
-      </div>
-
-      <button
-        type="button"
-        id=""
-        class="add-kill ml-4 disabled:bg-gray-200 disabled:cursor-not-allowed justify-center cursor-pointer transition ease-in duration-500"
-      >
-        Add kill
-      </button>
-
-      <div class="flex items-center cursor-pointer">
-      <button class="delete-player">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10v7m-4-7v7M6 6v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h5.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V6M6 6h2M6 6H4m4 0h8M8 6c0-.932 0-1.398.152-1.765a2 2 0 0 1 1.082-1.083C9.602 3 10.068 3 11 3h2c.932 0 1.398 0 1.765.152a2 2 0 0 1 1.083 1.083C16 4.602 16 5.068 16 6m0 0h2m0 0h2"/></svg>
-      </button>
-      </div>
+      <!-- Player Stats (Kills) -->
+      <div class="player-stats mt-4 space-y-3"></div>
     </div>
-    <div class="player-stats space-y-4"></div>
-    `;
-
-    newRow.innerHTML = newRowBase;
+    `;    newRow.innerHTML = newRowBase;
 
     playerStatsDiv.appendChild(newRow);
   });
