@@ -1,7 +1,7 @@
 // auth.config.ts
 import GitHub from "@auth/core/providers/github";
 import Google from "@auth/core/providers/google";
-import { db, eq, User, UserGroup } from "astro:db";
+import { db, eq, User, UserGroup, Group } from "astro:db";
 import { defineConfig } from "auth-astro";
 import bcrypt from "bcryptjs";
 
@@ -18,11 +18,8 @@ declare module "@auth/core/types" {
 }
 
 export default defineConfig({
+  secret: import.meta.env.AUTH_SECRET,
   providers: [
-    GitHub({
-      clientId: import.meta.env.GITHUB_CLIENT_ID,
-      clientSecret: import.meta.env.GITHUB_CLIENT_SECRET,
-    }),
     Google({
       clientId: import.meta.env.GOOGLE_CLIENT_ID,
       clientSecret: import.meta.env.GOOGLE_CLIENT_SECRET,
@@ -32,8 +29,9 @@ export default defineConfig({
     async signIn({ user }) {
       // Add user info to Astro DB when they log in
       try {
+        const newUserId = UUID();
         const newUser = {
-          id: UUID(),
+          id: newUserId,
           name: user.name ?? "Anonymous User",
           email: user.email ?? "no-email",
           password: bcrypt.hashSync("adyvgre0g"),
@@ -46,10 +44,11 @@ export default defineConfig({
           .limit(1);
 
         if (!dbUser) {
-          const queries = [db.insert(User).values(newUser)] as const;
-          await db.batch(queries);
-
-          console.log("User added to Astro DB:", user.email);
+          // Insert the new user
+          await db.insert(User).values(newUser);
+          console.log(`✅ User added to Astro DB: ${user.email}`);
+        } else {
+          console.log(`👋 Existing user signed in: ${user.email}`);
         }
       } catch (error) {
         console.error("Error saving user:", error);
