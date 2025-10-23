@@ -2,44 +2,250 @@
 import Layout from "../layouts/Layout.astro";
 import ModalWindow from "../components/ModalWindow.astro";
 import { actions } from "astro:actions";
+
+import { getSession } from "auth-astro/server";
+
+const session = await getSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect("/login");
+}
+
 const { data: usersData, error } = await Astro.callAction(actions.getUsers, {});
 console.log(usersData, error);
 ---
 
 <Layout>
-  <div class="flex justify-center self-center z-10">
-    <div class="p-12 mx-auto rounded-2xl w-100">
-      <div class="mb-4">
-        <h3 class="font-semibold text-2xl">List of players</h3>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-3 mb-4">
+        <a
+          href="/"
+          class="text-blue-600 hover:text-blue-800 flex items-center space-x-1 transition-colors"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back to Home</span>
+        </a>
       </div>
-      
-      <div class="space-y-5">
-        <div class="flex justify-between">
-          <div class="w-1/2">
-            <label class="text-sm font-medium tracking-wide">Name</label>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div
+            class="flex-shrink-0 h-16 w-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg"
+          >
+            👥
           </div>
-          <div class="w-1/2">
-            <label class="text-sm font-medium tracking-wide">Email</label>
+          <div>
+            <h1
+              class="text-4xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+            >
+              Players Directory
+            </h1>
+            <p class="text-gray-600 mt-1">
+              All registered Magic: The Gathering players
+            </p>
           </div>
         </div>
-        <div class="space-y-2">
+
+        <a href="/new-user">
+          <button
+            class="text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            <span>Add New Player</span>
+          </button>
+        </a>
+      </div>
+    </div>
+
+    <!-- Players Table -->
+    <div class="overflow-hidden shadow-lg rounded-lg border border-gray-200">
+      <table class="min-w-full bg-white">
+        <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+          <tr>
+            <th
+              class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+            >
+              👤 Player Name
+            </th>
+            <th
+              class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+            >
+              📧 Email Address
+            </th>
+            <th
+              class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+            >
+              📅 Joined Date
+            </th>
+            <th
+              class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+            >
+              🔗 Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
           {
-            usersData?.users.map((user) => (
-              <div class="flex justify-between">
-                <div class="w-1/2">
-                  <a href={`/users/${user.id}`}><span>{user.name}</span></a>
-                </div>
-                <div class="w-1/2">
-                  <span>{user.email}</span>
-                </div>
-              </div>
+            usersData?.users?.map((user, index) => (
+              <tr
+                class={`hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+              >
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      {user.name?.charAt(0)?.toUpperCase() || "?"}
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">
+                        {user.name || "Unknown Player"}
+                      </div>
+                      <div class="text-sm text-gray-500">Planeswalker</div>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{user.email}</div>
+                  <div class="text-sm text-gray-500">Primary contact</div>
+                </td>
+
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full font-medium">
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString("en-GB")
+                      : "Unknown"}
+                  </span>
+                </td>
+
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <a
+                    href={`/users/${user.id}`}
+                    class="inline-flex items-center"
+                  >
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                      <span>View Profile</span>
+                    </button>
+                  </a>
+                </td>
+              </tr>
             ))
           }
+        </tbody>
+      </table>
+
+      {
+        (!usersData?.users || usersData.users.length === 0) && (
+          <div class="text-center py-12 bg-gray-50">
+            <div class="text-gray-400 text-6xl mb-4">👥</div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">
+              No players yet
+            </h3>
+            <p class="text-gray-600 mb-6">
+              Start building your Magic community!
+            </p>
+            <a href="/new-user">
+              <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                Add First Player
+              </button>
+            </a>
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Player Stats Card -->
+    <div
+      class="mt-8 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden"
+    >
+      <div
+        class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-4"
+      >
+        <h2 class="text-xl font-semibold flex items-center space-x-2">
+          <span>📊</span>
+          <span>Community Statistics</span>
+        </h2>
+      </div>
+
+      <div class="p-6">
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">
+              {usersData?.users?.length || 0}
+            </div>
+            <div class="text-sm text-gray-600">Total Players</div>
+          </div>
+
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2">
+              {
+                usersData?.users?.filter(
+                  (user) =>
+                    user.createdAt &&
+                    new Date(user.createdAt) >
+                      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                ).length || 0
+              }
+            </div>
+            <div class="text-sm text-gray-600">New This Month</div>
+          </div>
+
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">
+              {
+                usersData?.users?.length
+                  ? Math.round(
+                      (usersData.users.length /
+                        Math.max(1, usersData.users.length)) *
+                        100
+                    )
+                  : 0
+              }%
+            </div>
+            <div class="text-sm text-gray-600">Community Growth</div>
+          </div>
         </div>
+      </div>
     </div>
   </div>
 
-  <ModalWindow title="Deck" />
+  <ModalWindow title="Player Management" />
 </Layout>
 
 <script>
