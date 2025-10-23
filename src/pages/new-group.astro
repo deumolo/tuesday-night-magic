@@ -12,63 +12,152 @@ const { user } = session;
 ---
 
 <Layout>
-  <div class="z-10">
-    <div>
-      <div>
-        <h3 class="text-2xl">New group</h3>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-3 mb-4">
+        <a href="/groups" class="text-purple-600 hover:text-purple-800 flex items-center space-x-1 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back to Groups</span>
+        </a>
       </div>
-      <form>
-        <div>
-          <input
-            class="w-full py-2 border"
-            type="text"
-            name="name"
-            placeholder="Group name"
-            value=""
-          />
+      
+      <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0 h-16 w-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+          👥
         </div>
         <div>
-          <input
-            class="w-full py-2 border"
-            type="text"
-            name="password"
-            placeholder="Group password"
-            value=""
-          />
+          <h1 class="text-4xl font-bold text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Create New Group
+          </h1>
+          <p class="text-gray-600 mt-1">Form your Magic: The Gathering playgroup</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="max-w-2xl mx-auto">
+      <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        <!-- Card Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-4">
+          <h2 class="text-xl font-semibold flex items-center space-x-2">
+            <span>👥</span>
+            <span>Group Information</span>
+          </h2>
+          <p class="text-purple-100 text-sm mt-1">Set up your playgroup details</p>
         </div>
 
-        <div>
-          <input type="hidden" name="userId" value={user?.id} />
-        </div>
+        <!-- Form Content -->
+        <div class="p-6">
+          <form class="space-y-6">
+            <!-- Group Name Field -->
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-1">
+                <span>🏷️</span>
+                <span>Group Name</span>
+                <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Enter group name (e.g., 'Tuesday Night Magic', 'EDH Squad')"
+                value=""
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors bg-gray-50 focus:bg-white"
+              />
+              <p class="text-xs text-gray-500 mt-1">Choose a memorable name for your playgroup</p>
+            </div>
 
-        <div>
-          <input type="hidden" name="administrator" value="true" />
-        </div>
+            <!-- Group Password Field -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-1">
+                <span>🔐</span>
+                <span>Group Password</span>
+                <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Create a secure password for your group"
+                value=""
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors bg-gray-50 focus:bg-white"
+              />
+              <p class="text-xs text-gray-500 mt-1">Password protects your group from unauthorized access</p>
+            </div>
 
-        <div>
-          <button
-            type="submit"
-            id="btn-submit"
-            class="bg-black text-white rounded-lg px-5 py-2.5"
-          >
-            Create
-          </button>
+            <!-- Hidden Fields -->
+            <input type="hidden" name="userId" value={user?.id} />
+            <input type="hidden" name="administrator" value="true" />
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+              <a href="/groups" class="text-gray-600 hover:text-gray-800 font-medium transition-colors">
+                Cancel
+              </a>
+              
+              <button
+                type="submit"
+                id="btn-submit"
+                class="px-8 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md flex items-center space-x-2"
+                style="background: linear-gradient(to right, #9333ea, #ec4899) !important; color: white !important; border: none !important;"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span>Create Group</span>
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
+
+      <!-- Tips Card -->
+      <div class="mt-6 bg-purple-50 border border-purple-200 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-purple-800 mb-3 flex items-center space-x-2">
+          <span>💡</span>
+          <span>Group Creation Tips</span>
+        </h3>
+        <ul class="space-y-2 text-sm text-purple-700">
+          <li class="flex items-start space-x-2">
+            <span class="text-purple-500 mt-0.5">•</span>
+            <span><strong>Group Names:</strong> Use names that reflect your play style or meeting schedule</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-purple-500 mt-0.5">•</span>
+            <span><strong>Passwords:</strong> Share the password only with trusted players you want to invite</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-purple-500 mt-0.5">•</span>
+            <span><strong>Administration:</strong> As the creator, you'll be the group administrator</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-purple-500 mt-0.5">•</span>
+            <span><strong>Match Tracking:</strong> Use groups to organize and track matches with regular players</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <ModalWindow>
+  <ModalWindow title="Group Creation">
     <div>
-      <h3 id="modal-title" class="text-2xl">New group not created</h3>
-      <div class="modal-window-content"></div>
+      <h3 id="modal-title" class="text-xl font-semibold text-red-600 mb-4">⚠️ Group Creation Failed</h3>
+      <div class="modal-window-content text-gray-700"></div>
     </div>
-    <div>
+    <div class="pt-4">
       <button
         id="close-modal"
         type="button"
-        class="bg-black text-white rounded-lg px-5 py-2.5">Close</button
+        class="px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+        style="background-color: #6b7280 !important; color: white !important; border: none !important;"
       >
+        Close
+      </button>
     </div>
   </ModalWindow>
 </Layout>

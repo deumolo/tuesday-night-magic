@@ -27,7 +27,7 @@ export const createGroup = defineAction({
       const newGroup = {
         id: newGroupId,
         name: formData.get("name") as string,
-        password: formData.get("password") as string,
+        password: bcrypt.hashSync(formData.get("password") as string),
         userId: userId,
         administrator: administrator,
       };
