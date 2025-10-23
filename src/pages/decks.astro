@@ -21,9 +21,25 @@ const { data: decksData, error: decksError } = await Astro.callAction(
   <h1 class="text-2xl">Decks</h1>
 
   <div class="flex justify-end">
-    <a href="/new-deck">
-      <button type="button" class="bg-black text-white rounded-lg px-5 py-2.5">
-        Create new deck
+    <a href="/new-group">
+      <button
+        type="button"
+        class="px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+        style=""
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        <span>Create New Group</span>
       </button>
     </a>
   </div>
@@ -32,16 +48,24 @@ const { data: decksData, error: decksError } = await Astro.callAction(
     <table class="min-w-full bg-white">
       <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <tr>
-          <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
+          <th
+            class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+          >
             🃏 Deck Name
           </th>
-          <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
+          <th
+            class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+          >
             🔗 Moxfield Link
           </th>
-          <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
+          <th
+            class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+          >
             📋 Details
           </th>
-          <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
+          <th
+            class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+          >
             📅 Date Created
           </th>
         </tr>
@@ -49,23 +73,41 @@ const { data: decksData, error: decksError } = await Astro.callAction(
       <tbody class="divide-y divide-gray-200">
         {
           decksData?.decks?.map((deck, index) => (
-            <tr class={`hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+            <tr
+              class={`hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+            >
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-8 w-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                     {deck.deckName.charAt(0).toUpperCase()}
                   </div>
                   <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">{deck.deckName}</div>
+                    <div class="text-sm font-medium text-gray-900">
+                      {deck.deckName}
+                    </div>
                   </div>
                 </div>
               </td>
 
               <td class="px-6 py-4 whitespace-nowrap">
-                <a href={deck.moxfieldLink} target="_blank" class="inline-flex items-center">
+                <a
+                  href={deck.moxfieldLink}
+                  target="_blank"
+                  class="inline-flex items-center"
+                >
                   <button class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
                     </svg>
                     <span>View on Moxfield</span>
                   </button>
@@ -73,10 +115,23 @@ const { data: decksData, error: decksError } = await Astro.callAction(
               </td>
 
               <td class="px-6 py-4 whitespace-nowrap">
-                <a href={`/decks/${deck.deckId}`} class="inline-flex items-center">
+                <a
+                  href={`/decks/${deck.deckId}`}
+                  class="inline-flex items-center"
+                >
                   <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                     <span>View Details</span>
                   </button>
@@ -95,18 +150,22 @@ const { data: decksData, error: decksError } = await Astro.callAction(
         }
       </tbody>
     </table>
-    
-    {(!decksData?.decks || decksData.decks.length === 0) && (
-      <div class="text-center py-12 bg-gray-50">
-        <div class="text-gray-400 text-6xl mb-4">🃏</div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No decks yet</h3>
-        <p class="text-gray-600 mb-6">Start building your Magic deck collection!</p>
-        <a href="/new-deck">
-          <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-            Create Your First Deck
-          </button>
-        </a>
-      </div>
-    )}
+
+    {
+      (!decksData?.decks || decksData.decks.length === 0) && (
+        <div class="text-center py-12 bg-gray-50">
+          <div class="text-gray-400 text-6xl mb-4">🃏</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No decks yet</h3>
+          <p class="text-gray-600 mb-6">
+            Start building your Magic deck collection!
+          </p>
+          <a href="/new-deck">
+            <button class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+              Create Your First Deck
+            </button>
+          </a>
+        </div>
+      )
+    }
   </div>
 </Layout>
