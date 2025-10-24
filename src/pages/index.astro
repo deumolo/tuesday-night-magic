@@ -1,9 +1,16 @@
 ---
-import Welcome from '../components/Welcome.astro';
+const prerender = false;
 import Layout from '../layouts/Layout.astro';
 import { getSession } from 'auth-astro/server';
-const session = await getSession(Astro.request)
 import { SignIn, SignOut } from 'auth-astro/components';
+
+let session = null;
+try {
+  session = await getSession(Astro.request);
+} catch (error) {
+  console.error('Session error:', error);
+  session = null;
+}
 ---
 
 <Layout>
