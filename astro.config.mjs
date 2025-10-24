@@ -14,6 +14,8 @@ import icon from 'astro-icon';
 // https://astro.build/config
 export default defineConfig({
   integrations: [db(), tailwind(), auth(), icon()],
-  adapter: netlify(),
+  adapter: netlify({
+    edge: false, // ✅ critical for Astro DB + Auth to work reliably
+  }),
   output: 'server',
 });
