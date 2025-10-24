@@ -16,6 +16,6 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   integrations: [db(), tailwind(), auth(), icon()],
-  adapter: vercel(),
+  adapter: netlify(),
   output: 'server',
 });

@@ -3,16 +3,16 @@ import { v4 as UUID } from "uuid";
 import bcrypt from "bcryptjs";
 
 export default async function () {
-  // Create 3 random groups
-  const group1Id = UUID();
+  // Create specific group and 2 additional random groups
+  const specificGroupId = "7925041a-6723-41ce-94d0-3ee312630078";
   const group2Id = UUID();
   const group3Id = UUID();
 
   const groups = [
     {
-      id: group1Id,
-      name: "Tuesday Night Legends",
-      description: "Weekly Magic gathering for competitive players",
+      id: specificGroupId,
+      name: "Admin Test Group",
+      description: "Special group with admin user",
       password: bcrypt.hashSync("123"),
     },
     {
@@ -29,17 +29,17 @@ export default async function () {
     }
   ];
 
-  // Create 4 players
-  const user1Id = UUID();
+  // Create specific user and 3 additional players
+  const specificUserId = "7925041a-6723-41ce-94d0-3ee312630078";
   const user2Id = UUID();
   const user3Id = UUID();
   const user4Id = UUID();
 
   const users = [
     {
-      id: user1Id,
-      name: "Alex Thunder",
-      email: "alex.thunder@magic.com",
+      id: specificUserId,
+      name: "Admin User",
+      email: "admin@magic.com",
       password: "$2b$10$hashedpassword1" // placeholder hashed password
     },
     {
@@ -64,21 +64,49 @@ export default async function () {
 
   // Create user-group relationships (some users in multiple groups)
   const userGroups = [
-    // Alex is in all three groups (very active player)
-    { userId: user1Id, groupId: group1Id },
-    { userId: user1Id, groupId: group2Id },
-    { userId: user1Id, groupId: group3Id },
+    // Admin user is admin of the specific group
+    { 
+      id: UUID(),
+      userId: specificUserId, 
+      groupId: specificGroupId,
+      administrator: "true"
+    },
     
-    // Sarah is in Tuesday Night Legends and Commander Crew
-    { userId: user2Id, groupId: group1Id },
-    { userId: user2Id, groupId: group3Id },
+    // Sarah is in Casual Planeswalkers and Commander Crew
+    { 
+      id: UUID(),
+      userId: user2Id, 
+      groupId: group2Id,
+      administrator: null
+    },
+    { 
+      id: UUID(),
+      userId: user2Id, 
+      groupId: group3Id,
+      administrator: null
+    },
     
     // Mike is only in Casual Planeswalkers and Commander Crew
-    { userId: user3Id, groupId: group2Id },
-    { userId: user3Id, groupId: group3Id },
+    { 
+      id: UUID(),
+      userId: user3Id, 
+      groupId: group2Id,
+      administrator: null
+    },
+    { 
+      id: UUID(),
+      userId: user3Id, 
+      groupId: group3Id,
+      administrator: null
+    },
     
-    // Luna is only in Tuesday Night Legends (new player)
-    { userId: user4Id, groupId: group1Id }
+    // Luna is only in Admin Test Group (new player)
+    { 
+      id: UUID(),
+      userId: user4Id, 
+      groupId: specificGroupId,
+      administrator: null
+    }
   ];
 
   // Insert all the data
