@@ -3,14 +3,14 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "dev:remote": "astro dev --remote",
-    "build": "astro build --remote",
-    "build:local": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "db:push": "astro db push",
-    "db:seed": "astro db seed",
+    "dev": "npx astro dev",
+    "dev:remote": "npx astro dev --remote",
+    "build": "npx astro build --remote",
+    "build:local": "npx astro build",
+    "preview": "npx astro preview",
+    "astro": "npx astro",
+    "db:push": "npx astro db push",
+    "db:seed": "npx astro db seed",
     "db:shell": "turso db shell tuesday-night-magic"
   },
   "dependencies": {
