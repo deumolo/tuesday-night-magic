@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "astro dev",
     "dev:remote": "astro dev --remote",
-    "build": "astro build --remote",
+    "build": "NODE_ENV=production astro build --remote",
     "build:local": "astro build",
     "preview": "astro preview",
+    "prepare": "npm install --legacy-peer-deps",
     "astro": "astro",
     "db:push": "astro db push",
     "db:seed": "astro db seed",
