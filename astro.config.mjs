@@ -12,6 +12,10 @@ import netlify from '@astrojs/netlify';
 
 export default defineConfig({
   integrations: [db(), tailwind(), auth(), icon()],
-  adapter: netlify(),
+  adapter: netlify(
+    {
+      edgeMiddleware: false,
+    }
+  ),
   output: 'server',
 });
