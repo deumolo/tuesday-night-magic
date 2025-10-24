@@ -1,7 +1,15 @@
 ---
 const prerender = false;
 import { getSession } from "auth-astro/server";
-const session = await getSession(Astro.request);
+
+let session = null;
+try {
+  session = await getSession(Astro.request);
+} catch (err) {
+  console.error('Session fetch failed:', err);
+  // optionally render a fallback UI
+}
+
 import { SignIn, SignOut } from "auth-astro/components";
 ---
 
