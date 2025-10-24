@@ -7,10 +7,11 @@ import auth from 'auth-astro';
 import icon from 'astro-icon';
 
 
+import netlify from '@astrojs/netlify';
+
+
 export default defineConfig({
   integrations: [db(), tailwind(), auth(), icon()],
-  adapter: node({
-    mode: 'standalone'
-  }),
+  adapter: netlify(),
   output: 'server',
 });
