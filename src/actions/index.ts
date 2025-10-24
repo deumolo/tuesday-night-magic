@@ -13,10 +13,11 @@ import {
   newMatch,
   editDeck,
   deleteDeck,
-  newSampleData,
   getGroupDetails,
   joinGroup,
-  leaveGroup
+  leaveGroup,
+  deleteGroup,
+  getUserGroupMembership,
 } from "./auth";
 
 export const server = {
@@ -34,8 +35,9 @@ export const server = {
   getUsersGroup,
   editDeck,
   deleteDeck,
-  newSampleData,
   getGroupDetails,
   joinGroup,
-  leaveGroup
+  leaveGroup,
+  deleteGroup,
+  getUserGroupMembership,
 };

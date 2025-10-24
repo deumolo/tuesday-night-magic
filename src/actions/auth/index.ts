@@ -15,10 +15,11 @@ export * from "./new-user.action";
 export * from "./new-group.action";
 export * from "./new-deck.action";
 export * from "./new-match.action";
-export * from "./new-sample-data.action";
 
 export * from "./join-group.action";
 export * from "./leave-group.action";
+export * from "./delete-group.action";
+export * from "./get-user-group-membership.action";
 
 export * from "./edit-deck.action";
 
