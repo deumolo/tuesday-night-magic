@@ -1,5 +1,6 @@
 import { db, Group, User, Deck, UserGroup } from "astro:db";
 import { v4 as UUID } from "uuid";
+import bcrypt from "bcryptjs";
 
 export default async function () {
   // Create 3 random groups
@@ -11,17 +12,20 @@ export default async function () {
     {
       id: group1Id,
       name: "Tuesday Night Legends",
-      description: "Weekly Magic gathering for competitive players"
+      description: "Weekly Magic gathering for competitive players",
+      password: bcrypt.hashSync("123"),
     },
     {
       id: group2Id,
       name: "Casual Planeswalkers",
-      description: "Friendly games and deck testing every weekend"
+      description: "Friendly games and deck testing every weekend",
+      password: bcrypt.hashSync("123"),
     },
     {
       id: group3Id,
       name: "Commander Crew",
-      description: "EDH enthusiasts meeting for multiplayer mayhem"
+      description: "EDH enthusiasts meeting for multiplayer mayhem",
+      password: bcrypt.hashSync("123"),
     }
   ];
 
