@@ -18,7 +18,7 @@ declare module "@auth/core/types" {
 }
 
 export default defineConfig({
-  secret: import.meta.env.AUTH_SECRET,
+  secret: import.meta.env.AUTH_SECRET || "fallback-secret-for-testing-only-change-in-production-must-be-at-least-32-chars",
   providers: [
     Google({
       clientId: import.meta.env.GOOGLE_CLIENT_ID,
@@ -34,7 +34,7 @@ export default defineConfig({
       /*
       try {
         const newUserId = UUID();
-        const newUser = {
+        const newUser = { 
           id: newUserId,
           name: user.name ?? "Anonymous User",
           email: user.email ?? "no-email",
@@ -64,7 +64,11 @@ export default defineConfig({
     },
 
     async jwt({ token, user }) {
-      // If user just signed in, attach database ID to the token
+      // Temporarily disable DB operations
+      console.log(`🔍 JWT callback for: ${user?.email || 'existing session'}`);
+      
+      // TODO: Re-enable DB logic after confirming auth works
+      /*
       if (user) {
         const [dbUser] = await db
           .select()
@@ -76,15 +80,21 @@ export default defineConfig({
           token.id = dbUser.id; // Store database user ID in the JWT
         }
       }
+      */
 
       return token;
     },
 
     async session({ session, token }) {
-      // Attach the database user ID from the JWT to the session
+      // Temporarily disable DB operations
+      console.log(`🔍 Session callback for: ${session?.user?.email || 'unknown'}`);
+      
+      // TODO: Re-enable DB logic after confirming auth works
+      /*
       if (token.id && session.user) {
         session.user.id = token.id as string;
       }
+      */
 
       return session;
     },
