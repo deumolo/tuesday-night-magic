@@ -1,13 +1,13 @@
 ---
-export const prerender = false;
+const prerender = false;
 import ModalWindow from "../../components/ModalWindow.astro";
 import Layout from "../../layouts/Layout.astro";
-const { groupId } = Astro.params;
-
 import { actions } from "astro:actions";
-
 import { getSession } from "auth-astro/server";
+
+const { groupId } = Astro.params;
 const session = await getSession(Astro.request);
+
 if (!session) {
   return Astro.redirect("/login");
 }
@@ -25,7 +25,6 @@ const { data: groupUsersData, error: groupUsersError } = await Astro.callAction(
   }
 );
 
-// Check if current user is a member and admin of this group
 let isCurrentUserMember = false;
 let isCurrentUserAdmin = false;
 

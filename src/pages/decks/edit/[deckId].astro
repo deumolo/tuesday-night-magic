@@ -2,9 +2,10 @@
 const prerender = false;
 import Layout from "../../../layouts/Layout.astro";
 import ModalWindow from "../../../components/ModalWindow.astro";
-
 import { getSession } from "auth-astro/server";
+
 const session = await getSession(Astro.request);
+
 if (!session) {
   return Astro.redirect("/login");
 }
@@ -21,7 +22,6 @@ const { data: deckDetailsData, error: deckDetailsError } =
   });
 
 const deck = deckDetailsData?.deck;
-
 ---
 
 <Layout>
