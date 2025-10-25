@@ -18,7 +18,7 @@ declare module "@auth/core/types" {
 }
 
 export default defineConfig({
-  secret: import.meta.env.AUTH_SECRET || "fallback-secret-for-testing-only-change-in-production-must-be-at-least-32-chars",
+  secret: import.meta.env.AUTH_SECRET,
   providers: [
     Google({
       clientId: import.meta.env.GOOGLE_CLIENT_ID,
@@ -27,14 +27,10 @@ export default defineConfig({
   ],
   callbacks: {
     async signIn({ user }) {
-      // Temporarily disable DB operations to test auth
-      console.log(`🔍 Sign-in attempt for: ${user.email}`);
-      
-      // TODO: Re-enable DB logic after confirming auth works
-      /*
+      // Add user info to Astro DB when they log in
       try {
         const newUserId = UUID();
-        const newUser = { 
+        const newUser = {
           id: newUserId,
           name: user.name ?? "Anonymous User",
           email: user.email ?? "no-email",
@@ -58,17 +54,10 @@ export default defineConfig({
         console.error("Error saving user:", error);
         return false; // Reject sign-in if DB insert fails
       }
-      */
 
       return true; // Allow sign-in
-    },
-
-    async jwt({ token, user }) {
-      // Temporarily disable DB operations
-      console.log(`🔍 JWT callback for: ${user?.email || 'existing session'}`);
-      
-      // TODO: Re-enable DB logic after confirming auth works
-      /*
+    },    async jwt({ token, user }) {
+      // If user just signed in, attach database ID to the token
       if (user) {
         const [dbUser] = await db
           .select()
@@ -80,21 +69,15 @@ export default defineConfig({
           token.id = dbUser.id; // Store database user ID in the JWT
         }
       }
-      */
 
       return token;
     },
 
     async session({ session, token }) {
-      // Temporarily disable DB operations
-      console.log(`🔍 Session callback for: ${session?.user?.email || 'unknown'}`);
-      
-      // TODO: Re-enable DB logic after confirming auth works
-      /*
+      // Attach the database user ID from the JWT to the session
       if (token.id && session.user) {
         session.user.id = token.id as string;
       }
-      */
 
       return session;
     },
