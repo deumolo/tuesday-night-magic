@@ -8,8 +8,9 @@ import auth from 'auth-astro';
 import icon from 'astro-icon';
 
 // Use different adapters for development vs production
-const isDev = process.env.NODE_ENV === 'development' || !process.env.NETLIFY;
-const adapter = isDev ? node({ mode: 'standalone' }) : netlify();
+// Check if we're building for Netlify specifically
+const isNetlifyBuild = process.env.NODE_ENV === 'production' && (process.env.NETLIFY || process.env.CONTEXT);
+const adapter = isNetlifyBuild ? netlify() : node({ mode: 'standalone' });
 
 // https://astro.build/config
 export default defineConfig({
