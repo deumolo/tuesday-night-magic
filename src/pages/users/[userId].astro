@@ -1,8 +1,15 @@
 ---
-export const prerender = false;
+const prerender = false;
 import Layout from "../../layouts/Layout.astro";
-const { userId } = Astro.params;
 import { actions } from "astro:actions";
+import { getSession } from "auth-astro/server";
+
+const { userId } = Astro.params;
+const session = await getSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect("/login");
+}
 
 const { data: decksData, error: decksError } = await Astro.callAction(
   actions.getDecksUser,

@@ -1,12 +1,6 @@
 [build]
-  command = "rm -rf node_modules package-lock.json && npm install --legacy-peer-deps --include=optional && npm run build"
+  command = "npm run build"
   publish = "dist"
   
 [build.environment]
   NODE_VERSION = "20.19.5"
-  NODE_ENV = "production"
-  NETLIFY = "true"
-  CONTEXT = "production"
-
-[functions]
-  node_bundler = "esbuild"

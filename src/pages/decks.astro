@@ -1,12 +1,15 @@
 ---
+const prerender = false;
 import Layout from "../layouts/Layout.astro";
 import { actions } from "astro:actions";
-
 import { getSession } from "auth-astro/server";
+
 const session = await getSession(Astro.request);
+
 if (!session) {
   return Astro.redirect("/login");
 }
+
 const { user } = session;
 
 const { data: decksData, error: decksError } = await Astro.callAction(
