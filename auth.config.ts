@@ -27,7 +27,11 @@ export default defineConfig({
   ],
   callbacks: {
     async signIn({ user }) {
-      // Add user info to Astro DB when they log in
+      // Temporarily disable DB operations to test auth
+      console.log(`🔍 Sign-in attempt for: ${user.email}`);
+      
+      // TODO: Re-enable DB logic after confirming auth works
+      /*
       try {
         const newUserId = UUID();
         const newUser = {
@@ -54,6 +58,7 @@ export default defineConfig({
         console.error("Error saving user:", error);
         return false; // Reject sign-in if DB insert fails
       }
+      */
 
       return true; // Allow sign-in
     },
